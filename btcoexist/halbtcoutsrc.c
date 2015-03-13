@@ -957,7 +957,8 @@ void halbtc_set_bt_reg(void *btc_context, u8 reg_type, u32 offset, u32 set_val)
 
 bool halbtc_set_bt_ant_detection(void *btc_context, u8 tx_time, u8 bt_chnl)
 {
-	return true;
+	/* Always return _FALSE since we don't implement this yet */
+	return false;
 }
 
 u32 halbtc_get_bt_reg(void *btc_context, u8 reg_type, u32 offset)
