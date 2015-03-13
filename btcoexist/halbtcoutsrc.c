@@ -578,6 +578,7 @@ static bool halbtc_set(void *void_btcoexist, u8 set_type, void *in_buf)
 	bool *bool_tmp = (bool *)in_buf;
 	u8 *u8_tmp = (u8 *)in_buf;
 	u32 *u32_tmp = (u32 *)in_buf;
+	bool ret = true;
 
 	if (!halbtc_is_bt_coexist_available(btcoexist))
 		return false;
@@ -621,6 +622,7 @@ static bool halbtc_set(void *void_btcoexist, u8 set_type, void *in_buf)
 		/* the following are some action which will be triggered */
 	case BTC_SET_ACT_GET_BT_RSSI:
 		/*BTHCI_SendGetBtRssiEvent(rtlpriv);*/
+		ret = false;
 		break;
 	case BTC_SET_ACT_AGGREGATE_CTRL:
 		halbtc_aggregation_check(btcoexist);
@@ -662,12 +664,13 @@ static bool halbtc_set(void *void_btcoexist, u8 set_type, void *in_buf)
 	case BTC_SET_ACT_CTRL_BT_COEX:
 		break;
 	case BTC_SET_ACT_CTRL_8723B_ANT:
+		ret = false;
 		break;
 	default:
 		break;
 	}
 
-	return true;
+	return ret;
 }
 
 static void halbtc_display_coex_statistics(struct btc_coexist *btcoexist)
