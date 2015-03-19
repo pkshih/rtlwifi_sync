@@ -2570,6 +2570,7 @@ struct rtl_btc_ops {
 	bool (*btc_is_bt_ctrl_lps)(struct rtl_priv *rtlpriv);
 	void (*btc_get_ampdu_cfg)(struct rtl_priv *rtlpriv, u8 *reject_agg,
 				  u8 *ctrl_agg_size, u8 *agg_size);
+	bool (*btc_is_bt_lps_on)(struct rtl_priv *rtlpriv);
 };
 
 struct proxim {
