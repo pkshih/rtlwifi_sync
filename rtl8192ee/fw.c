@@ -965,6 +965,7 @@ void rtl92ee_c2h_content_parsing(struct ieee80211_hw *hw, u8 c2h_cmd_id,
 				 u8 c2h_cmd_len, u8 *tmp_buf)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
+	struct rtl_btc_ops *btc_ops = rtlpriv->btcoexist.btc_ops;
 
 	switch (c2h_cmd_id) {
 	case C2H_8192E_DBG:
@@ -983,12 +984,12 @@ void rtl92ee_c2h_content_parsing(struct ieee80211_hw *hw, u8 c2h_cmd_id,
 	case C2H_8192E_BT_INFO:
 		RT_TRACE(rtlpriv, COMP_FW, DBG_TRACE,
 			 "[C2H], C2H_8723BE_BT_INFO!!\n");
-		rtlpriv->btcoexist.btc_ops->btc_btinfo_notify(rtlpriv, tmp_buf,
-							      c2h_cmd_len);
+		btc_ops->btc_btinfo_notify(rtlpriv, tmp_buf, c2h_cmd_len);
 		break;
 	case C2H_8192E_BT_MP:
 		RT_TRACE(rtlpriv, COMP_FW, DBG_TRACE,
 			 "[C2H], C2H_8723BE_BT_MP!!\n");
+		btc_ops->btc_btmpinfo_notify(rtlpriv, tmp_buf, c2h_cmd_len);
 		break;
 	case C2H_8192E_RA_RPT:
 		_rtl92ee_c2h_ra_report_handler(hw, tmp_buf, c2h_cmd_len);
