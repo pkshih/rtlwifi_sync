@@ -39,8 +39,8 @@ void rtl_dbgp_flag_init(struct ieee80211_hw *hw)
 	    COMP_RF | COMP_TURBO | COMP_RATR | COMP_CMD |
 	    COMP_EFUSE | COMP_QOS | COMP_MAC80211 | COMP_REGD | COMP_CHAN |
 	    COMP_EASY_CONCURRENT | COMP_EFUSE | COMP_QOS | COMP_MAC80211 |
-	    COMP_REGD | COMP_CHAN | COMP_BT_COEXIST | COMP_TX_REPORT;
-
+	    COMP_REGD | COMP_CHAN | COMP_BT_COEXIST | COMP_TX_REPORT |
+	    COMP_VENDOR_CMD;
 
 	for (i = 0; i < DBGP_TYPE_MAX; i++)
 		rtlpriv->dbg.dbgp_type[i] = 0;
