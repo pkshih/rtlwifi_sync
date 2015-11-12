@@ -53,7 +53,17 @@ static struct rtl_btc_ops rtl_btc_operation = {
 	.btc_is_bt_ctrl_lps = rtl_btc_is_bt_ctrl_lps,
 	.btc_is_bt_lps_on = rtl_btc_is_bt_lps_on,
 	.btc_get_ampdu_cfg = rtl_btc_get_ampdu_cfg,
+	.btc_display_bt_coex_info = rtl_btc_display_bt_coex_info,
 };
+
+void rtl_btc_display_bt_coex_info(u8 *buff, u32 size)
+{
+	struct btc_coexist *btcoexist = &gl_bt_coexist;
+
+	halbtc_dbg_info_init(btcoexist, buff, size);
+	exhalbtc_display_bt_coex_info(&gl_bt_coexist);
+	halbtc_dbg_info_init(btcoexist, NULL, 0);
+}
 
 void rtl_btc_record_pwr_mode(struct rtl_priv *rtlpriv, u8 *buf, u8 len)
 {
