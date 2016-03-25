@@ -107,6 +107,7 @@
 #define COMP_IQK			BIT(31)
 #define COMP_TX_REPORT			BIT_ULL(32)
 #define COMP_VENDOR_CMD			BIT_ULL(33)
+#define COMP_HALMAC			BIT_ULL(34)
 
 /*--------------------------------------------------------------
 		Define the rt_print components
