@@ -26,6 +26,7 @@
 #include "cam.h"
 
 #include <linux/moduleparam.h>
+#include <linux/vmalloc.h>
 
 void rtl_dbgp_flag_init(struct ieee80211_hw *hw)
 {
@@ -76,14 +77,12 @@ EXPORT_SYMBOL_GPL(_rtl_dbg_trace);
 #endif
 
 static struct dentry *debugfs_topdir;
-static int rtl_debug_get_mac_0(struct seq_file *m, void *v)
+static int _rtl_debug_get_mac_page_x(struct seq_file *m, void *v, int page)
 {
 	struct ieee80211_hw *hw = m->private;
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
-	int i, n, page;
+	int i, n;
 	int max = 0xff;
-
-	page = 0x000;
 
 	for (n = 0; n <= max; ) {
 		seq_printf(m, "\n%8.8x  ", n + page);
@@ -93,6 +92,11 @@ static int rtl_debug_get_mac_0(struct seq_file *m, void *v)
 	}
 	seq_puts(m, "\n");
 	return 0;
+}
+
+static int rtl_debug_get_mac_0(struct seq_file *m, void *v)
+{
+	return _rtl_debug_get_mac_page_x(m, v, 0x0000);
 }
 
 static int dl_debug_open_mac_0(struct inode *inode, struct file *file)
@@ -109,21 +113,7 @@ static const struct file_operations file_ops_mac_0 = {
 
 static int rtl_debug_get_mac_1(struct seq_file *m, void *v)
 {
-	struct ieee80211_hw *hw = m->private;
-	struct rtl_priv *rtlpriv = rtl_priv(hw);
-	int i, n, page;
-	int max = 0xff;
-
-	page = 0x100;
-
-	for (n = 0; n <= max; ) {
-		seq_printf(m, "\n%8.8x  ", n + page);
-		for (i = 0; i < 4 && n <= max; i++, n += 4)
-			seq_printf(m, "%8.8x    ",
-				   rtl_read_dword(rtlpriv, (page | n)));
-	}
-	seq_puts(m, "\n");
-	return 0;
+	return _rtl_debug_get_mac_page_x(m, v, 0x0100);
 }
 
 static int dl_debug_open_mac_1(struct inode *inode, struct file *file)
@@ -140,21 +130,7 @@ static const struct file_operations file_ops_mac_1 = {
 
 static int rtl_debug_get_mac_2(struct seq_file *m, void *v)
 {
-	struct ieee80211_hw *hw = m->private;
-	struct rtl_priv *rtlpriv = rtl_priv(hw);
-	int i, n, page;
-	int max = 0xff;
-
-	page = 0x200;
-
-	for (n = 0; n <= max; ) {
-		seq_printf(m, "\n%8.8x  ", n + page);
-		for (i = 0; i < 4 && n <= max; i++, n += 4)
-			seq_printf(m, "%8.8x    ",
-				   rtl_read_dword(rtlpriv, (page | n)));
-	}
-	seq_puts(m, "\n");
-	return 0;
+	return _rtl_debug_get_mac_page_x(m, v, 0x0200);
 }
 
 static int dl_debug_open_mac_2(struct inode *inode, struct file *file)
@@ -171,21 +147,8 @@ static const struct file_operations file_ops_mac_2 = {
 
 static int rtl_debug_get_mac_3(struct seq_file *m, void *v)
 {
-	struct ieee80211_hw *hw = m->private;
-	struct rtl_priv *rtlpriv = rtl_priv(hw);
-	int i, n, page;
-	int max = 0xff;
+	return _rtl_debug_get_mac_page_x(m, v, 0x0300);
 
-	page = 0x300;
-
-	for (n = 0; n <= max; ) {
-		seq_printf(m, "\n%8.8x  ", n + page);
-		for (i = 0; i < 4 && n <= max; i++, n += 4)
-			seq_printf(m, "%8.8x    ",
-				   rtl_read_dword(rtlpriv, (page | n)));
-	}
-	seq_puts(m, "\n");
-	return 0;
 }
 
 static int dl_debug_open_mac_3(struct inode *inode, struct file *file)
@@ -202,21 +165,7 @@ static const struct file_operations file_ops_mac_3 = {
 
 static int rtl_debug_get_mac_4(struct seq_file *m, void *v)
 {
-	struct ieee80211_hw *hw = m->private;
-	struct rtl_priv *rtlpriv = rtl_priv(hw);
-	int i, n, page;
-	int max = 0xff;
-
-	page = 0x400;
-
-	for (n = 0; n <= max; ) {
-		seq_printf(m, "\n%8.8x  ", n + page);
-		for (i = 0; i < 4 && n <= max; i++, n += 4)
-			seq_printf(m, "%8.8x    ",
-				   rtl_read_dword(rtlpriv, (page | n)));
-	}
-	seq_puts(m, "\n");
-	return 0;
+	return _rtl_debug_get_mac_page_x(m, v, 0x0400);
 }
 
 static int dl_debug_open_mac_4(struct inode *inode, struct file *file)
@@ -233,21 +182,7 @@ static const struct file_operations file_ops_mac_4 = {
 
 static int rtl_debug_get_mac_5(struct seq_file *m, void *v)
 {
-	struct ieee80211_hw *hw = m->private;
-	struct rtl_priv *rtlpriv = rtl_priv(hw);
-	int i, n, page;
-	int max = 0xff;
-
-	page = 0x500;
-
-	for (n = 0; n <= max; ) {
-		seq_printf(m, "\n%8.8x  ", n + page);
-		for (i = 0; i < 4 && n <= max; i++, n += 4)
-			seq_printf(m, "%8.8x    ",
-				   rtl_read_dword(rtlpriv, (page | n)));
-	}
-	seq_puts(m, "\n");
-	return 0;
+	return _rtl_debug_get_mac_page_x(m, v, 0x0500);
 }
 
 static int dl_debug_open_mac_5(struct inode *inode, struct file *file)
@@ -264,21 +199,7 @@ static const struct file_operations file_ops_mac_5 = {
 
 static int rtl_debug_get_mac_6(struct seq_file *m, void *v)
 {
-	struct ieee80211_hw *hw = m->private;
-	struct rtl_priv *rtlpriv = rtl_priv(hw);
-	int i, n, page;
-	int max = 0xff;
-
-	page = 0x600;
-
-	for (n = 0; n <= max; ) {
-		seq_printf(m, "\n%8.8x  ", n + page);
-		for (i = 0; i < 4 && n <= max; i++, n += 4)
-			seq_printf(m, "%8.8x    ",
-				   rtl_read_dword(rtlpriv, (page | n)));
-	}
-	seq_puts(m, "\n");
-	return 0;
+	return _rtl_debug_get_mac_page_x(m, v, 0x0600);
 }
 
 static int dl_debug_open_mac_6(struct inode *inode, struct file *file)
@@ -295,21 +216,7 @@ static const struct file_operations file_ops_mac_6 = {
 
 static int rtl_debug_get_mac_7(struct seq_file *m, void *v)
 {
-	struct ieee80211_hw *hw = m->private;
-	struct rtl_priv *rtlpriv = rtl_priv(hw);
-	int i, n, page;
-	int max = 0xff;
-
-	page = 0x700;
-
-	for (n = 0; n <= max; ) {
-		seq_printf(m, "\n%8.8x  ", n + page);
-		for (i = 0; i < 4 && n <= max; i++, n += 4)
-			seq_printf(m, "%8.8x    ",
-				   rtl_read_dword(rtlpriv, (page | n)));
-	}
-	seq_puts(m, "\n");
-	return 0;
+	return _rtl_debug_get_mac_page_x(m, v, 0x0700);
 }
 
 static int dl_debug_open_mac_7(struct inode *inode, struct file *file)
@@ -324,22 +231,145 @@ static const struct file_operations file_ops_mac_7 = {
 	.release = seq_release,
 };
 
+static int rtl_debug_get_mac_10(struct seq_file *m, void *v)
+{
+	return _rtl_debug_get_mac_page_x(m, v, 0x1000);
+}
+
+static int dl_debug_open_mac_10(struct inode *inode, struct file *file)
+{
+	return single_open(file, rtl_debug_get_mac_10, inode->i_private);
+}
+
+static const struct file_operations file_ops_mac_10 = {
+	.open = dl_debug_open_mac_10,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = seq_release,
+};
+
+static int rtl_debug_get_mac_11(struct seq_file *m, void *v)
+{
+	return _rtl_debug_get_mac_page_x(m, v, 0x1100);
+}
+
+static int dl_debug_open_mac_11(struct inode *inode, struct file *file)
+{
+	return single_open(file, rtl_debug_get_mac_11, inode->i_private);
+}
+
+static const struct file_operations file_ops_mac_11 = {
+	.open = dl_debug_open_mac_11,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = seq_release,
+};
+
+static int rtl_debug_get_mac_12(struct seq_file *m, void *v)
+{
+	return _rtl_debug_get_mac_page_x(m, v, 0x1200);
+}
+
+static int dl_debug_open_mac_12(struct inode *inode, struct file *file)
+{
+	return single_open(file, rtl_debug_get_mac_12, inode->i_private);
+}
+
+static const struct file_operations file_ops_mac_12 = {
+	.open = dl_debug_open_mac_12,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = seq_release,
+};
+
+static int rtl_debug_get_mac_13(struct seq_file *m, void *v)
+{
+	return _rtl_debug_get_mac_page_x(m, v, 0x1300);
+}
+
+static int dl_debug_open_mac_13(struct inode *inode, struct file *file)
+{
+	return single_open(file, rtl_debug_get_mac_13, inode->i_private);
+}
+
+static const struct file_operations file_ops_mac_13 = {
+	.open = dl_debug_open_mac_13,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = seq_release,
+};
+
+static int rtl_debug_get_mac_14(struct seq_file *m, void *v)
+{
+	return _rtl_debug_get_mac_page_x(m, v, 0x1400);
+}
+
+static int dl_debug_open_mac_14(struct inode *inode, struct file *file)
+{
+	return single_open(file, rtl_debug_get_mac_14, inode->i_private);
+}
+
+static const struct file_operations file_ops_mac_14 = {
+	.open = dl_debug_open_mac_14,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = seq_release,
+};
+
+static int rtl_debug_get_mac_15(struct seq_file *m, void *v)
+{
+	return _rtl_debug_get_mac_page_x(m, v, 0x1500);
+}
+
+static int dl_debug_open_mac_15(struct inode *inode, struct file *file)
+{
+	return single_open(file, rtl_debug_get_mac_15, inode->i_private);
+}
+
+static const struct file_operations file_ops_mac_15 = {
+	.open = dl_debug_open_mac_15,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = seq_release,
+};
+
+static int rtl_debug_get_mac_16(struct seq_file *m, void *v)
+{
+	return _rtl_debug_get_mac_page_x(m, v, 0x1600);
+}
+
+static int dl_debug_open_mac_16(struct inode *inode, struct file *file)
+{
+	return single_open(file, rtl_debug_get_mac_16, inode->i_private);
+}
+
+static const struct file_operations file_ops_mac_16 = {
+	.open = dl_debug_open_mac_16,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = seq_release,
+};
+
+static int rtl_debug_get_mac_17(struct seq_file *m, void *v)
+{
+	return _rtl_debug_get_mac_page_x(m, v, 0x1700);
+}
+
+static int dl_debug_open_mac_17(struct inode *inode, struct file *file)
+{
+	return single_open(file, rtl_debug_get_mac_17, inode->i_private);
+}
+
+static const struct file_operations file_ops_mac_17 = {
+	.open = dl_debug_open_mac_17,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = seq_release,
+};
+
 static int rtl_debug_get_bb_8(struct seq_file *m, void *v)
 {
-	struct ieee80211_hw *hw = m->private;
-	int i, n, page;
-	int max = 0xff;
-
-	page = 0x800;
-
-	for (n = 0; n <= max; ) {
-		seq_printf(m, "\n%8.8x  ", n + page);
-		for (i = 0; i < 4 && n <= max; i++, n += 4)
-			seq_printf(m, "%8.8x    ",
-				   rtl_get_bbreg(hw, (page | n), 0xffffffff));
-	}
-	seq_puts(m, "\n");
-	return 0;
+	return _rtl_debug_get_mac_page_x(m, v, 0x0800);
 }
 
 static int dl_debug_open_bb_8(struct inode *inode, struct file *file)
@@ -564,11 +594,48 @@ static const struct file_operations file_ops_bb_f = {
 	.release = seq_release,
 };
 
-static int rtl_debug_get_reg_rf_a(struct seq_file *m, void *v)
+static int rtl_debug_get_bb_page_x(struct seq_file *m, void *v, int page, int max)
 {
 	struct ieee80211_hw *hw = m->private;
 	int i, n;
+
+	for (n = 0; n <= max; ) {
+		seq_printf(m, "\n%8.8x  ", n + page);
+		for (i = 0; i < 4 && n <= max; i++, n += 4)
+			seq_printf(m, "%8.8x    ",
+				   rtl_get_bbreg(hw, (page | n), 0xffffffff));
+	}
+	seq_puts(m, "\n");
+	return 0;
+}
+
+static int rtl_debug_get_bb_1XXX(struct seq_file *m, void *v)
+{
+	return rtl_debug_get_bb_page_x(m, v, 0x1800, 0x7ff);
+}
+
+static int dl_debug_open_bb_1XXX(struct inode *inode, struct file *file)
+{
+	return single_open(file, rtl_debug_get_bb_1XXX, inode->i_private);
+}
+
+static const struct file_operations file_ops_bb_1XXX = {
+	.open = dl_debug_open_bb_1XXX,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.release = seq_release,
+};
+
+static int rtl_debug_get_reg_rf_a(struct seq_file *m, void *v)
+{
+	struct ieee80211_hw *hw = m->private;
+	struct rtl_priv *rtlpriv = rtl_priv(hw);
+	struct rtl_hal *rtlhal = rtl_hal(rtlpriv);
+	int i, n;
 	int max = 0x40;
+
+	if (rtlhal->hw_type == HARDWARE_TYPE_RTL8822BE)
+		max = 0xff;
 
 	for (n = 0; n <= max; ) {
 		seq_printf(m, "\n%8.8x  ", n);
@@ -596,8 +663,13 @@ static const struct file_operations file_ops_rf_a = {
 static int rtl_debug_get_reg_rf_b(struct seq_file *m, void *v)
 {
 	struct ieee80211_hw *hw = m->private;
+	struct rtl_priv *rtlpriv = rtl_priv(hw);
+	struct rtl_hal *rtlhal = rtl_hal(rtlpriv);
 	int i, n;
 	int max = 0x40;
+
+	if (rtlhal->hw_type == HARDWARE_TYPE_RTL8822BE)
+		max = 0xff;
 
 	for (n = 0; n <= max; ) {
 		seq_printf(m, "\n%8.8x  ", n);
@@ -964,6 +1036,62 @@ void rtl_debug_add_one(struct ieee80211_hw *hw)
 			 "Unable to initialize debugfs:/%s/%s/mac-7\n",
 			  rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
 
+	entry1 = debugfs_create_file("mac-10", S_IFREG | S_IRUGO,
+				 rtlpriv->dbg.debugfs_dir, hw, &file_ops_mac_10);
+	if (!entry1)
+		RT_TRACE(rtlpriv, COMP_INIT, COMP_ERR,
+			 "Unable to initialize debugfs:/%s/%s/mac-10\n",
+			  rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
+
+	entry1 = debugfs_create_file("mac-11", S_IFREG | S_IRUGO,
+				 rtlpriv->dbg.debugfs_dir, hw, &file_ops_mac_11);
+	if (!entry1)
+		RT_TRACE(rtlpriv, COMP_INIT, COMP_ERR,
+			 "Unable to initialize debugfs:/%s/%s/mac-11\n",
+			  rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
+
+	entry1 = debugfs_create_file("mac-12", S_IFREG | S_IRUGO,
+				 rtlpriv->dbg.debugfs_dir, hw, &file_ops_mac_12);
+	if (!entry1)
+		RT_TRACE(rtlpriv, COMP_INIT, COMP_ERR,
+			 "Unable to initialize debugfs:/%s/%s/mac-12\n",
+			  rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
+
+	entry1 = debugfs_create_file("mac-13", S_IFREG | S_IRUGO,
+				 rtlpriv->dbg.debugfs_dir, hw, &file_ops_mac_13);
+	if (!entry1)
+		RT_TRACE(rtlpriv, COMP_INIT, COMP_ERR,
+			 "Unable to initialize debugfs:/%s/%s/mac-13\n",
+			  rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
+
+	entry1 = debugfs_create_file("mac-14", S_IFREG | S_IRUGO,
+				 rtlpriv->dbg.debugfs_dir, hw, &file_ops_mac_14);
+	if (!entry1)
+		RT_TRACE(rtlpriv, COMP_INIT, COMP_ERR,
+			 "Unable to initialize debugfs:/%s/%s/mac-14\n",
+			  rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
+
+	entry1 = debugfs_create_file("mac-15", S_IFREG | S_IRUGO,
+				 rtlpriv->dbg.debugfs_dir, hw, &file_ops_mac_15);
+	if (!entry1)
+		RT_TRACE(rtlpriv, COMP_INIT, COMP_ERR,
+			 "Unable to initialize debugfs:/%s/%s/mac-15\n",
+			  rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
+
+	entry1 = debugfs_create_file("mac-16", S_IFREG | S_IRUGO,
+				 rtlpriv->dbg.debugfs_dir, hw, &file_ops_mac_16);
+	if (!entry1)
+		RT_TRACE(rtlpriv, COMP_INIT, COMP_ERR,
+			 "Unable to initialize debugfs:/%s/%s/mac-16\n",
+			  rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
+
+	entry1 = debugfs_create_file("mac-17", S_IFREG | S_IRUGO,
+				 rtlpriv->dbg.debugfs_dir, hw, &file_ops_mac_17);
+	if (!entry1)
+		RT_TRACE(rtlpriv, COMP_INIT, COMP_ERR,
+			 "Unable to initialize debugfs:/%s/%s/mac-17\n",
+			  rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
+
 	entry1 = debugfs_create_file("bb-8", S_IFREG | S_IRUGO,
 				 rtlpriv->dbg.debugfs_dir, hw, &file_ops_bb_8);
 	if (!entry1)
@@ -1018,6 +1146,13 @@ void rtl_debug_add_one(struct ieee80211_hw *hw)
 	if (!entry1)
 		RT_TRACE(rtlpriv, COMP_INIT, COMP_ERR,
 			 "Unable to initialize debugfs:/%s/%s/bb-f\n",
+			  rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
+
+	entry1 = debugfs_create_file("bb-1xxx", S_IFREG | S_IRUGO,
+				 rtlpriv->dbg.debugfs_dir, hw, &file_ops_bb_1XXX);
+	if (!entry1)
+		RT_TRACE(rtlpriv, COMP_INIT, COMP_ERR,
+			 "Unable to initialize debugfs:/%s/%s/bb-1xxx\n",
 			  rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
 
 	entry1 = debugfs_create_file("rf-a", S_IFREG | S_IRUGO,
