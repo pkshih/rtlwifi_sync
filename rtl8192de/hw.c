@@ -1760,7 +1760,7 @@ static void _rtl92de_read_adapter_info(struct ieee80211_hw *hw)
 		return;
 
 	if (rtl_get_hwinfo(hw, rtlpriv, HWSET_MAX_SIZE, hwinfo, params))
-		return;
+		goto exit;
 
 	_rtl92de_efuse_update_chip_version(hw);
 	_rtl92de_read_macphymode_and_bandtype(hw, hwinfo);
@@ -1793,6 +1793,7 @@ static void _rtl92de_read_adapter_info(struct ieee80211_hw *hw)
 		break;
 	}
 	rtlefuse->txpwr_fromeprom = true;
+exit:
 	kfree(hwinfo);
 }
 
