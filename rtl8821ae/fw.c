@@ -57,7 +57,7 @@ static void _rtl8821ae_fw_block_write(struct ieee80211_hw *hw,
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	u32 blocksize = sizeof(u32);
 	u8 *bufferptr = (u8 *)buffer;
-	u32 *pu4byteptr = (u32 *)buffer;
+	__le32 *pu4byteptr = (__le32 *)buffer;
 	u32 i, offset, blockcount, remainsize;
 
 	blockcount = size / blocksize;
@@ -66,7 +66,7 @@ static void _rtl8821ae_fw_block_write(struct ieee80211_hw *hw,
 	for (i = 0; i < blockcount; i++) {
 		offset = i * blocksize;
 		rtl_write_dword(rtlpriv, (FW_8821AE_START_ADDRESS + offset),
-				*(pu4byteptr + i));
+				le32_to_cpu(*(pu4byteptr + i)));
 	}
 
 	if (remainsize) {
