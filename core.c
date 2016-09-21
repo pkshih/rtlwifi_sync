@@ -51,6 +51,9 @@ u8 channel5g_80m[CHANNEL_MAX_NUMBER_5G_80M] = {
 };
 EXPORT_SYMBOL(channel5g_80m);
 
+int show_it_bb;
+EXPORT_SYMBOL(show_it_bb);
+
 void rtl_addr_delay(u32 addr)
 {
 	if (addr == 0xfe)
