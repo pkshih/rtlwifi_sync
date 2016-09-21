@@ -3238,6 +3238,8 @@ static inline void rtl_write_dword(struct rtl_priv *rtlpriv,
 		rtlpriv->io.read32_sync(rtlpriv, addr);
 }
 
+extern int show_it_bb;
+
 static inline u32 rtl_get_bbreg(struct ieee80211_hw *hw,
 				u32 regaddr, u32 bitmask)
 {
@@ -3250,6 +3252,9 @@ static inline void rtl_set_bbreg(struct ieee80211_hw *hw, u32 regaddr,
 				 u32 bitmask, u32 data)
 {
 	struct rtl_priv *rtlpriv = hw->priv;
+
+	if (show_it_bb)
+		printk( "wbb: addr=%X bitmask=%08X val=%08X\n", regaddr, bitmask, data);
 
 	rtlpriv->cfg->ops->set_bbreg(hw, regaddr, bitmask, data);
 }
