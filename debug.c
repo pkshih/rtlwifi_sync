@@ -983,11 +983,78 @@ static const struct file_operations file_ops_write_reg = {
 	.release = rtl_debugfs_close,
 };
 
+static ssize_t rtl_debugfs_phydm_cmd(struct file *filp,
+		const char __user *buffer, size_t count, loff_t *loff)
+{
+	struct ieee80211_hw *hw = filp->private_data;
+	struct rtl_priv *rtlpriv = rtl_priv(hw);
+
+	char tmp[64];
+
+	if (!rtlpriv->dbg.msg_buf)
+		return -ENOMEM;
+
+	if (!rtlpriv->phydm.ops)
+		return -EFAULT;
+
+	if (buffer && !copy_from_user(tmp, buffer, sizeof(tmp))) {
+
+		tmp[count] = '\0';
+
+		rtlpriv->phydm.ops->phydm_debug_cmd(rtlpriv, tmp, count,
+						    rtlpriv->dbg.msg_buf,
+						    80*25);
+	}
+
+	return count;
+}
+
+static int rtl_debug_get_phydm_cmd(struct seq_file *m, void *v)
+{
+	struct ieee80211_hw *hw = m->private;
+	struct rtl_priv *rtlpriv = rtl_priv(hw);
+
+	if (rtlpriv->dbg.msg_buf)
+		seq_puts(m, rtlpriv->dbg.msg_buf);
+
+	return 0;
+}
+
+static int rtl_debugfs_open_rw(struct inode *inode, struct file *filp)
+{
+	if (filp->f_mode & FMODE_READ)
+		single_open(filp, rtl_debug_get_phydm_cmd,
+						   inode->i_private);
+	else
+		filp->private_data = inode->i_private;
+
+	return 0;
+}
+
+static int rtl_debugfs_close_rw(struct inode *inode, struct file *filp)
+{
+	if (filp->f_mode == FMODE_READ)
+		seq_release(inode, filp);
+
+	return 0;
+}
+
+static const struct file_operations file_ops_phydm_cmd = {
+	.owner = THIS_MODULE,
+	.open = rtl_debugfs_open_rw,
+	.release = rtl_debugfs_close_rw,
+	.read = seq_read,
+	.llseek = seq_lseek,
+	.write = rtl_debugfs_phydm_cmd,
+};
+
 void rtl_debug_add_one(struct ieee80211_hw *hw)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_efuse *rtlefuse = rtl_efuse(rtl_priv(hw));
 	struct dentry *entry1;
+
+	rtlpriv->dbg.msg_buf = vzalloc(80 * 25);
 
 	snprintf(rtlpriv->dbg.debugfs_name, 18, "%02x-%02x-%02x-%02x-%02x-%02x",
 		rtlefuse->dev_addr[0], rtlefuse->dev_addr[1],
@@ -1228,6 +1295,13 @@ void rtl_debug_add_one(struct ieee80211_hw *hw)
 				"Unable to initialize debugfs:/%s/%s/write_reg\n",
 				rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
 
+	entry1 = debugfs_create_file("phydm_cmd", S_IFREG | S_IWUGO | S_IRUGO,
+				rtlpriv->dbg.debugfs_dir, hw, &file_ops_phydm_cmd);
+	if (!entry1)
+		RT_TRACE(rtlpriv, COMP_INIT, COMP_ERR,
+				"Unable to initialize debugfs:/%s/%s/phydm_cmd\n",
+				rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
+
 }
 EXPORT_SYMBOL_GPL(rtl_debug_add_one);
 
@@ -1237,6 +1311,8 @@ void rtl_debug_remove_one(struct ieee80211_hw *hw)
 
 	debugfs_remove_recursive(rtlpriv->dbg.debugfs_dir);
 	rtlpriv->dbg.debugfs_dir = NULL;
+
+	vfree(rtlpriv->dbg.msg_buf);
 }
 EXPORT_SYMBOL_GPL(rtl_debug_remove_one);
 
