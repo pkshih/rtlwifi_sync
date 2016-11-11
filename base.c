@@ -313,6 +313,8 @@ static void _rtl_init_hw_vht_capab(struct ieee80211_hw *hw,
 	}
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
+
 #define OUI_REALTEK	0x00E04C
 
 enum {
@@ -399,6 +401,7 @@ static const struct wiphy_vendor_command rtl_vendor_cmds[] = {
 		.doit = rtl_cfgvendor_coex_4way,
 	},
 };
+#endif
 
 static void _rtl_init_mac80211(struct ieee80211_hw *hw)
 {
@@ -408,9 +411,11 @@ static void _rtl_init_mac80211(struct ieee80211_hw *hw)
 	struct rtl_efuse *rtlefuse = rtl_efuse(rtl_priv(hw));
 	struct ieee80211_supported_band *sband;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
 	hw->wiphy->vendor_commands = rtl_vendor_cmds;
 	hw->wiphy->n_vendor_commands =
 			sizeof(rtl_vendor_cmds) / sizeof(rtl_vendor_cmds[0]);
+#endif
 
 	if (rtlhal->macphymode == SINGLEMAC_SINGLEPHY &&
 	    rtlhal->bandset == BAND_ON_BOTH) {
