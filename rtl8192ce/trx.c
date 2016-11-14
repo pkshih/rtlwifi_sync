@@ -318,8 +318,13 @@ static void _rtl92ce_translate_rx_signal_stuff(struct ieee80211_hw *hw,
 			      hdr->addr3) &&
 	     (!pstats->hwerror) && (!pstats->crc) && (!pstats->icv));
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0))
+	packet_toself = packet_matchbssid &&
+	    (compare_ether_addr(praddr, rtlefuse->dev_addr));
+#else
 	packet_toself = packet_matchbssid &&
 	     ether_addr_equal(praddr, rtlefuse->dev_addr);
+#endif
 
 	if (ieee80211_is_beacon(fc))
 		packet_beacon = true;

@@ -319,6 +319,15 @@ static void translate_rx_signal_stuff(struct ieee80211_hw *hw,
 	psaddr = ieee80211_get_SA(hdr);
 	ether_addr_copy(pstatus->psaddr, psaddr);
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0))
+	packet_matchbssid = ((IEEE80211_FTYPE_CTL != type) &&
+	     (compare_ether_addr(mac->bssid, (fc & IEEE80211_FCTL_TODS) ?
+				  hdr->addr1 : (fc & IEEE80211_FCTL_FROMDS) ?
+				  hdr->addr2 : hdr->addr3)) &&
+	     (!pstatus->hwerror) && (!pstatus->crc) && (!pstatus->icv));
+	packet_toself = packet_matchbssid &&
+	    (compare_ether_addr(praddr, rtlefuse->dev_addr));
+#else
 	packet_matchbssid = (!ieee80211_is_ctl(fc) &&
 			     (ether_addr_equal(mac->bssid,
 					       ieee80211_has_tods(fc) ?
@@ -330,6 +339,7 @@ static void translate_rx_signal_stuff(struct ieee80211_hw *hw,
 
 	packet_toself = packet_matchbssid &&
 	    (ether_addr_equal(praddr, rtlefuse->dev_addr));
+#endif
 
 	if (ieee80211_is_beacon(hdr->frame_control))
 		packet_beacon = true;

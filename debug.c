@@ -26,6 +26,9 @@
 #include "cam.h"
 
 #include <linux/moduleparam.h>
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 2, 0))
+#include <linux/export.h>
+#endif
 
 void rtl_dbgp_flag_init(struct ieee80211_hw *hw)
 {
