@@ -519,6 +519,8 @@ static void _rtl_init_mac80211(struct ieee80211_hw *hw)
 			IEEE80211_HW_PS_NULLFUNC_STACK |
 			/* IEEE80211_HW_SUPPORTS_DYNAMIC_PS | */
 			0;
+	if (rtlpriv->psc.fwctrl_lps)
+		hw->flags |= IEEE80211_HW_SUPPORTS_PS;
 #endif
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37))
 	hw->wiphy->interface_modes =
