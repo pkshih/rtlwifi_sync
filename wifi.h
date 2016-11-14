@@ -35,7 +35,12 @@
 #include <linux/usb.h>
 #include <net/mac80211.h>
 #include <linux/completion.h>
+#include <linux/version.h>
 #include "debug.h"
+
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0))
+#define NUM_NL80211_BANDS	IEEE80211_NUM_BANDS
+#endif
 
 #define	MASKBYTE0				0xff
 #define	MASKBYTE1				0xff00
