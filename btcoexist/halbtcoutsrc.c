@@ -30,6 +30,7 @@
  ***********************************************/
 
 struct btc_coexist gl_bt_coexist;
+u8 gl_btc_trace_buf[BT_TMP_BUF_SIZE];
 
 u32 btc_dbg_type[BTC_MSG_MAX];
 

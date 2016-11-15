@@ -194,6 +194,15 @@ do {									\
 	}								\
 } while (0)
 
+#define RT_TRACE_STRING(rtlpriv, comp, level, string)			\
+do {									\
+	if (unlikely(((comp) & rtlpriv->dbg.global_debugcomponents) &&	\
+		     ((level) <= rtlpriv->dbg.global_debuglevel))) {	\
+		printk(KBUILD_MODNAME ":%s():<%lx> %s",			\
+		       __func__, in_interrupt(), string);		\
+	}								\
+} while (0)
+
 #define RT_PRINT_DATA(rtlpriv, _comp, _level, _titlestring, _hexdata,	\
 		      _hexdatalen)					\
 do {									\
@@ -227,6 +236,11 @@ __printf(4, 5)
 static inline void RTPRINT(struct rtl_priv *rtlpriv,
 			   int dbgtype, int dbgflag,
 			   const char *fmt, ...)
+{
+}
+
+static inline void RT_TRACE_STRING(struct rtl_priv *rtlpriv,
+				   u64 comp, int level, const char *string)
 {
 }
 
