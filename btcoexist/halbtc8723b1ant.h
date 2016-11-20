@@ -44,8 +44,7 @@
 #define BTC_RSSI_COEX_THRESH_TOL_8723B_1ANT	2
 
 #define BT_8723B_1ANT_WIFI_NOISY_THRESH                                        \
-	50 /* 30   /max: 255                                                   \
-	      */
+	50 /* 30   /max: 255 */
 
 /* for Antenna detection */
 #define BT_8723B_1ANT_ANTDET_PSDTHRES_BACKGROUND	50
