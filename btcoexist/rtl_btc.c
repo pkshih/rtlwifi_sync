@@ -122,7 +122,8 @@ void rtl_btc_power_on_setting(struct rtl_priv *rtlpriv)
 void rtl_btc_init_hal_vars(struct rtl_priv *rtlpriv)
 {
 	/* move ant_num, bt_type and single_ant_path to
-	   exhalbtc_bind_bt_coex_withadapter() */
+	 * exhalbtc_bind_bt_coex_withadapter()
+	 */
 }
 
 void rtl_btc_init_hw_config(struct rtl_priv *rtlpriv)
