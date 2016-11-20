@@ -170,11 +170,12 @@ struct btc_board_info {
 	u8 bt_chip_type;
 	u8 pg_ant_num;	/* pg ant number */
 	u8 btdm_ant_num;	/* ant number for btdm */
-	u8 btdm_ant_num_by_ant_det;	/* ant number for btdm after antenna
-					 * detection */
-	u8 btdm_ant_pos;	/* Bryant Add to indicate Antenna Position for
-				 * (pg_ant_num = 2) && (btdm_ant_num =1)
-				 * (DPDT+1Ant case) */
+	/* ant number for btdm after antenna * detection */
+	u8 btdm_ant_num_by_ant_det;
+	/* Bryant Add to indicate Antenna Position for
+	 * (pg_ant_num = 2) && (btdm_ant_num =1) (DPDT+1Ant case)
+	 */
+	u8 btdm_ant_pos;
 	u8 single_ant_path;	/* current used for 8723b only, 1=>s0,  0=>s1 */
 	bool tfbga_package;	/* for Antenna detect threshold  */
 	bool btdm_ant_det_finish;
