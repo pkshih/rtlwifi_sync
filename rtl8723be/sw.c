@@ -91,7 +91,7 @@ int rtl8723be_init_sw_vars(struct ieee80211_hw *hw)
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
 	struct rtl_mac *mac = rtl_mac(rtl_priv(hw));
-	char *fw_name = "rtlwifi/rtl8723befw.bin";
+	char *fw_name = "rtlwifi/rtl8723befw_36.bin";
 
 	rtl8723be_bt_reg_init(hw);
 	rtlpriv->btcoexist.btc_ops = rtl_btc_get_ops_pointer();
@@ -190,9 +190,17 @@ int rtl8723be_init_sw_vars(struct ieee80211_hw *hw)
 				      rtlpriv->io.dev, GFP_KERNEL, hw,
 				      rtl_fw_cb);
 	if (err) {
-		RT_TRACE(rtlpriv, COMP_ERR, DBG_EMERG,
-			 "Failed to request firmware!\n");
-		return 1;
+		/* Failed to get firmware. Check if old version available */
+		fw_name = "rtlwifi/rtl8723befw.bin";
+		pr_info("Using firmware %s\n", fw_name);
+		err = request_firmware_nowait(THIS_MODULE, 1, fw_name,
+					      rtlpriv->io.dev, GFP_KERNEL, hw,
+					      rtl_fw_cb);
+		if (err) {
+			RT_TRACE(rtlpriv, COMP_ERR, DBG_EMERG,
+				 "Failed to request firmware!\n");
+			return 1;
+		}
 	}
 	return 0;
 }
