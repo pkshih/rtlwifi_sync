@@ -774,6 +774,10 @@ bool rtl8723be_phy_config_rf_with_headerfile(struct ieee80211_hw *hw,
 				RTL8723BE_RADIOA_1TARRAY,
 				RTL8723BE_RADIOA_1TARRAYLEN,
 				_rtl8723be_config_rf_radio_a);
+
+		if (rtlhal->oem_id == RT_CID_819X_HP)
+			_rtl8723be_config_rf_radio_a(hw, 0x52, 0x7E4BD);
+		break;
 	case RF90_PATH_B:
 	case RF90_PATH_C:
 		break;
