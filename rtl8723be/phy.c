@@ -766,11 +766,13 @@ bool rtl8723be_phy_config_rf_with_headerfile(struct ieee80211_hw *hw,
 					     enum radio_path rfpath)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
+ 	struct rtl_hal *rtlhal = rtl_hal(rtl_priv(hw));
+	bool ret = true;
 
 	RT_TRACE(rtlpriv, COMP_INIT, DBG_LOUD, "Radio No %x\n", rfpath);
 	switch (rfpath) {
 	case RF90_PATH_A:
-		return __rtl8723be_phy_config_with_headerfile(hw,
+		ret = __rtl8723be_phy_config_with_headerfile(hw,
 				RTL8723BE_RADIOA_1TARRAY,
 				RTL8723BE_RADIOA_1TARRAYLEN,
 				_rtl8723be_config_rf_radio_a);
@@ -786,7 +788,7 @@ bool rtl8723be_phy_config_rf_with_headerfile(struct ieee80211_hw *hw,
 			 "switch case %#x not processed\n", rfpath);
 		break;
 	}
-	return true;
+	return ret;
 }
 
 void rtl8723be_phy_get_hw_reg_originalvalue(struct ieee80211_hw *hw)
