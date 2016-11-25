@@ -53,6 +53,8 @@ EXPORT_SYMBOL(channel5g_80m);
 
 int show_it_bb;
 EXPORT_SYMBOL(show_it_bb);
+int show_it_mac;
+EXPORT_SYMBOL(show_it_mac);
 
 void rtl_addr_delay(u32 addr)
 {
