@@ -3205,8 +3205,13 @@ static inline u32 rtl_read_dword(struct rtl_priv *rtlpriv, u32 addr)
 	return rtlpriv->io.read32_sync(rtlpriv, addr);
 }
 
+extern int show_it_mac;
+
 static inline void rtl_write_byte(struct rtl_priv *rtlpriv, u32 addr, u8 val8)
 {
+	if (show_it_mac)
+		printk( "wmac: addr=%X val=%08X\n", addr, val8);
+
 	rtlpriv->io.write8_async(rtlpriv, addr, val8);
 
 	if (rtlpriv->cfg->write_readback)
@@ -3218,11 +3223,18 @@ static inline void rtl_write_byte_with_val32(struct ieee80211_hw *hw,
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 
+	if (show_it_mac)
+		printk( "wmac: addr=%X val=%08X\n", addr, val8);
+
+
 	rtl_write_byte(rtlpriv, addr, (u8)val8);
 }
 
 static inline void rtl_write_word(struct rtl_priv *rtlpriv, u32 addr, u16 val16)
 {
+	if (show_it_mac)
+		printk( "wmac: addr=%X val=%08X\n", addr, val16);
+
 	rtlpriv->io.write16_async(rtlpriv, addr, val16);
 
 	if (rtlpriv->cfg->write_readback)
@@ -3232,6 +3244,10 @@ static inline void rtl_write_word(struct rtl_priv *rtlpriv, u32 addr, u16 val16)
 static inline void rtl_write_dword(struct rtl_priv *rtlpriv,
 				   u32 addr, u32 val32)
 {
+	if (show_it_mac)
+		printk( "wmac: addr=%X val=%08X\n", addr, val32);
+
+
 	rtlpriv->io.write32_async(rtlpriv, addr, val32);
 
 	if (rtlpriv->cfg->write_readback)
