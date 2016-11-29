@@ -1413,6 +1413,44 @@ void rtl_get_tcb_desc(struct ieee80211_hw *hw,
 }
 EXPORT_SYMBOL(rtl_get_tcb_desc);
 
+void display_coex(struct ieee80211_hw *hw, const char *str)
+{
+	struct rtl_priv *rtlpriv = rtl_priv(hw);
+	u8 *buff, *ptr_start, *ptr_cur;
+	u32 size = 30 * 100;
+	int k = 0;
+
+	buff = kzalloc(size, GFP_KERNEL);
+
+	if (buff == NULL)
+		return;
+
+	printk("%s", str);
+
+	if (rtlpriv->cfg->ops->get_btc_status())
+		rtlpriv->btcoexist.btc_ops->btc_display_bt_coex_info(buff,
+								     size);
+
+	ptr_start = ptr_cur = buff;
+
+	while (1) {
+		if (*ptr_cur == '\n' || *ptr_cur == '\r') {
+			*ptr_cur = '\0';
+			if (*ptr_start != '\0')
+				printk("%d: %s\n", k++, ptr_start);
+			ptr_start = ptr_cur + 1;
+		} else if (*ptr_cur == '\0') {
+			printk("%d: %s\n", k++, ptr_start);
+			ptr_start = ptr_cur + 1;
+			break;
+		}
+
+		ptr_cur++;
+	}
+
+	kfree(buff);
+}
+
 bool rtl_tx_mgmt_proc(struct ieee80211_hw *hw, struct sk_buff *skb)
 {
 	struct rtl_mac *mac = rtl_mac(rtl_priv(hw));
