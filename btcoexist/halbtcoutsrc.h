@@ -303,6 +303,9 @@ enum btc_get_type {
 	BTC_GET_U4_VENDOR,
 	BTC_GET_U4_SUPPORTED_VERSION,
 	BTC_GET_U4_SUPPORTED_FEATURE,
+	BTC_GET_U4_WIFI_IQK_TOTAL,
+	BTC_GET_U4_WIFI_IQK_OK,
+	BTC_GET_U4_WIFI_IQK_FAIL,
 
 	/* type u8 */
 	BTC_GET_U1_WIFI_DOT11_CHNL,
@@ -492,6 +495,15 @@ typedef u32 (*bfp_btc_get_bt_coex_supported_feature)(void *btcoexist);
 
 typedef u32 (*bfp_btc_get_bt_coex_supported_version)(void *btcoexist);
 
+typedef u32 (*bfp_btc_get_bt_phydm_version)(void *btcoexist);
+
+typedef void (*bfp_btc_phydm_modify_ra_pcr_threshold)(void *btcoexist,
+					  u8 ra_offset_direction,
+					  u8 ra_threshold_offset);
+
+typedef u32 (*bfp_btc_phydm_query_phy_counter)(void *btcoexist,
+					       const char *info_type);
+
 typedef u8 (*bfp_btc_get_ant_det_val_from_bt)(void *btcoexist);
 
 typedef u8 (*bfp_btc_get_ble_scan_type_from_bt)(void *btcoexist);
@@ -670,6 +682,9 @@ struct btc_coexist {
 
 	bfp_btc_get_bt_coex_supported_feature btc_get_bt_coex_supported_feature;
 	bfp_btc_get_bt_coex_supported_version btc_get_bt_coex_supported_version;
+	bfp_btc_get_bt_phydm_version btc_get_bt_phydm_version;
+	bfp_btc_phydm_modify_ra_pcr_threshold btc_phydm_modify_ra_pcr_threshold;
+	bfp_btc_phydm_query_phy_counter btc_phydm_query_phy_counter;
 	bfp_btc_get_ant_det_val_from_bt btc_get_ant_det_val_from_bt;
 	bfp_btc_get_ble_scan_type_from_bt btc_get_ble_scan_type_from_bt;
 	bfp_btc_get_ble_scan_para_from_bt btc_get_ble_scan_para_from_bt;
