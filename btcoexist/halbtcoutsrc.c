@@ -233,6 +233,14 @@ u8 rtl_get_hwpg_package_type(struct rtl_priv *rtlpriv)
 	return rtlhal->package_type;
 }
 
+static
+u8 rtl_get_hwpg_rfe_type(struct rtl_priv *rtlpriv)
+{
+	struct rtl_hal *rtlhal = rtl_hal(rtlpriv);
+
+	return rtlhal->rfe_type;
+}
+
 /* ************************************
  *         Hal helper function
  * ************************************
@@ -1271,6 +1279,8 @@ bool exhalbtc_bind_bt_coex_withadapter(void *adapter)
 	else
 		RT_TRACE_BTC(COMP_BT_COEXIST, DBG_LOUD,
 			     "[BTCoex], Package Type = Non-TFBGA\n");
+
+	btcoexist->board_info.rfe_type = rtl_get_hwpg_rfe_type(rtlpriv);
 
 	return true;
 }
