@@ -482,6 +482,7 @@ static void _rtl_init_mac80211(struct ieee80211_hw *hw)
 		}
 	}
 	/* <5> set hw caps */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 2, 0))
 	ieee80211_hw_set(hw, SIGNAL_DBM);
 	ieee80211_hw_set(hw, RX_INCLUDES_FCS);
 	ieee80211_hw_set(hw, AMPDU_AGGREGATION);
@@ -496,6 +497,26 @@ static void _rtl_init_mac80211(struct ieee80211_hw *hw)
 	}
 	if (rtlpriv->psc.fwctrl_lps)
 		ieee80211_hw_set(hw, SUPPORTS_PS);
+#else
+	hw->flags = IEEE80211_HW_SIGNAL_DBM |
+	    IEEE80211_HW_RX_INCLUDES_FCS |
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 4, 0))
+	    IEEE80211_HW_BEACON_FILTER |
+#endif
+	    IEEE80211_HW_AMPDU_AGGREGATION |
+	    IEEE80211_HW_CONNECTION_MONITOR |
+	    /* IEEE80211_HW_SUPPORTS_CQM_RSSI | */
+	    IEEE80211_HW_MFP_CAPABLE |
+	    IEEE80211_HW_REPORTS_TX_ACK_STATUS | 0;
+
+	/* swlps or hwlps has been set in diff chip in init_sw_vars */
+	if (rtlpriv->psc.swctrl_lps)
+		hw->flags |= IEEE80211_HW_SUPPORTS_PS |
+			IEEE80211_HW_PS_NULLFUNC_STACK |
+			/* IEEE80211_HW_SUPPORTS_DYNAMIC_PS | */
+			0;
+#endif
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37))
 	hw->wiphy->interface_modes =
 	    BIT(NL80211_IFTYPE_AP) |
 	    BIT(NL80211_IFTYPE_STATION) |
@@ -503,9 +524,20 @@ static void _rtl_init_mac80211(struct ieee80211_hw *hw)
 	    BIT(NL80211_IFTYPE_MESH_POINT) |
 	    BIT(NL80211_IFTYPE_P2P_CLIENT) |
 	    BIT(NL80211_IFTYPE_P2P_GO);
+#else
+	hw->wiphy->interface_modes =
+	    BIT(NL80211_IFTYPE_AP) |
+	    BIT(NL80211_IFTYPE_STATION) |
+	    BIT(NL80211_IFTYPE_ADHOC) |
+	    BIT(NL80211_IFTYPE_MESH_POINT);
+#endif
+#if (LINUX_VERSION_CODE > KERNEL_VERSION(2, 6, 39))
 	hw->wiphy->flags |= WIPHY_FLAG_IBSS_RSN;
+#endif
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 3, 0))
 	hw->wiphy->flags |= WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL;
+#endif
 
 	hw->wiphy->rts_threshold = 2347;
 
@@ -1150,7 +1182,13 @@ int rtlwifi_rate_mapping(struct ieee80211_hw *hw, bool isht, bool isvht,
 		return rate_idx;
 	}
 	if (false == isht) {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0))
 		if (NL80211_BAND_2GHZ == hw->conf.chandef.chan->band) {
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
+		if (IEEE80211_BAND_2GHZ == hw->conf.chandef.chan->band) {
+#else
+		if (IEEE80211_BAND_2GHZ == hw->conf.channel->band) {
+#endif
 			switch (desc_rate) {
 			case DESC_RATE1M:
 				rate_idx = 0;

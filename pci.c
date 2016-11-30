@@ -30,7 +30,9 @@
 #include "ps.h"
 #include "efuse.h"
 #include <linux/interrupt.h>
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 2, 0))
 #include <linux/export.h>
+#endif
 #include <linux/kmemleak.h>
 #include <linux/module.h>
 

@@ -1392,24 +1392,42 @@ static void rtl_op_sta_notify(struct ieee80211_hw *hw,
 	}
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0))
 static int rtl_op_ampdu_action(struct ieee80211_hw *hw,
 			       struct ieee80211_vif *vif,
 			       struct ieee80211_ampdu_params *params)
+#else
+static int rtl_op_ampdu_action(struct ieee80211_hw *hw,
+			       struct ieee80211_vif *vif,
+			       enum ieee80211_ampdu_mlme_action action,
+			       struct ieee80211_sta *sta,
+			       u16 tid, u16 *ssn, u8 buf_size
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 4, 0))
+			       , bool amsdu
+#endif
+			       )
+#endif
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 6, 0))
 	struct ieee80211_sta *sta = params->sta;
 	enum ieee80211_ampdu_mlme_action action = params->action;
 	u16 tid = params->tid;
 	u16 *ssn = &params->ssn;
+#endif
 
 	switch (action) {
 	case IEEE80211_AMPDU_TX_START:
 		RT_TRACE(rtlpriv, COMP_MAC80211, DBG_TRACE,
 			 "IEEE80211_AMPDU_TX_START: TID:%d\n", tid);
 		return rtl_tx_agg_start(hw, vif, sta, tid, ssn);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0))
 	case IEEE80211_AMPDU_TX_STOP_CONT:
 	case IEEE80211_AMPDU_TX_STOP_FLUSH:
 	case IEEE80211_AMPDU_TX_STOP_FLUSH_CONT:
+#else
+	case IEEE80211_AMPDU_TX_STOP:
+#endif
 		RT_TRACE(rtlpriv, COMP_MAC80211, DBG_TRACE,
 			 "IEEE80211_AMPDU_TX_STOP: TID:%d\n", tid);
 		return rtl_tx_agg_stop(hw, vif, sta, tid);
@@ -1434,9 +1452,13 @@ static int rtl_op_ampdu_action(struct ieee80211_hw *hw,
 	return 0;
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0))
 static void rtl_op_sw_scan_start(struct ieee80211_hw *hw,
 				 struct ieee80211_vif *vif,
 				 const u8 *mac_addr)
+#else
+static void rtl_op_sw_scan_start(struct ieee80211_hw *hw)
+#endif
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_mac *mac = rtl_mac(rtl_priv(hw));
@@ -1473,8 +1495,12 @@ static void rtl_op_sw_scan_start(struct ieee80211_hw *hw,
 	rtlpriv->cfg->ops->scan_operation_backup(hw, SCAN_OPT_BACKUP_BAND0);
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 19, 0))
 static void rtl_op_sw_scan_complete(struct ieee80211_hw *hw,
 				    struct ieee80211_vif *vif)
+#else
+static void rtl_op_sw_scan_complete(struct ieee80211_hw *hw)
+#endif
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_mac *mac = rtl_mac(rtl_priv(hw));
@@ -1749,14 +1775,22 @@ static void rtl_op_rfkill_poll(struct ieee80211_hw *hw)
  * maybe send after offchannel or rf sleep, this may cause
  * dis-association by AP */
 static void rtl_op_flush(struct ieee80211_hw *hw,
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 16, 0))
 			 struct ieee80211_vif *vif,
+#endif
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
 			 u32 queues,
+#endif
 			 bool drop)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 
 	if (rtlpriv->intf_ops->flush)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
 		rtlpriv->intf_ops->flush(hw, queues, drop);
+#else
+		rtlpriv->intf_ops->flush(hw, 0, drop);
+#endif
 }
 
 /*	Description:
