@@ -181,6 +181,7 @@ struct btc_board_info {
 	bool btdm_ant_det_finish;
 
 	u8 rfe_type;
+	u8 ant_div_cfg;
 };
 
 
