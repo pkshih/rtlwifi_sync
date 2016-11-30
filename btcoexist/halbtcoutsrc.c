@@ -642,6 +642,9 @@ static bool halbtc_get(void *void_btcoexist, u8 get_type, void *out_buf)
 	case BTC_GET_BL_IS_ASUS_8723B:
 		*bool_tmp = false;
 		break;
+	case BTC_GET_BL_RF4CE_CONNECTED:
+		*bool_tmp = false;
+		break;
 	case BTC_GET_S4_WIFI_RSSI:
 		*s32_tmp = halbtc_get_wifi_rssi(rtlpriv);
 		break;
