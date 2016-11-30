@@ -1337,6 +1337,7 @@ bool exhalbtc_bind_bt_coex_withadapter(void *adapter)
 			     "[BTCoex], Package Type = Non-TFBGA\n");
 
 	btcoexist->board_info.rfe_type = rtl_get_hwpg_rfe_type(rtlpriv);
+	btcoexist->board_info.ant_div_cfg = 0;
 
 	return true;
 }
