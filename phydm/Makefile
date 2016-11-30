@@ -1,5 +1,12 @@
 ccflags-y += -I$(src)/
 
+ccflags-y += -DDM_ODM_CE_MAC80211
+ccflags-y += -DDM_ODM_SUPPORT_TYPE=0x04
+ccflags-y += -DDBG=1
+ccflags-y += -DMP_DRIVER=0
+ccflags-y += -DDISABLE_BB_RF=0
+ccflags-y += -DRTL8822B_SUPPORT=1
+
 phydm_mod-objs := \
 		phydm_debug.o	\
 		phydm_antdiv.o\
@@ -22,6 +29,11 @@ phydm_mod-objs := \
 		phydm_kfree.o\
 		phydm_ccx.o
 
+#phydm_mod-objs += \
+		txbf/halcomtxbf.o\
+		txbf/haltxbfinterface.o\
+		txbf/phydm_hal_txbf_api.o\
+
 phydm_mod-objs += \
 		rtl8822b/halhwimg8822b_bb.o\
 		rtl8822b/halhwimg8822b_mac.o\
@@ -31,6 +43,9 @@ phydm_mod-objs += \
 		rtl8822b/phydm_iqk_8822b.o\
 		rtl8822b/phydm_regconfig8822b.o\
 		rtl8822b/phydm_rtl8822b.o
+
+#phydm_mod-objs += \
+		txbf/haltxbf8822b.o
 
 phydm_mod-objs += \
 		rtl_phydm.o
