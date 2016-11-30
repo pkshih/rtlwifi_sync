@@ -174,6 +174,8 @@ struct btc_board_info {
 	u8 single_ant_path;	/* current used for 8723b only, 1=>s0,  0=>s1 */
 	bool tfbga_package;	/* for Antenna detect threshold  */
 	bool btdm_ant_det_finish;
+
+	u8 rfe_type;
 };
 
 
