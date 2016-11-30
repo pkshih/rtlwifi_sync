@@ -27,6 +27,8 @@
 
 #include	"../wifi.h"
 
+#define		BTC_COEX_OFFLOAD			0
+
 #ifdef CONFIG_RTLWIFI_DEBUG
 
 #define BTC_SPRINTF(ptr, ...)	snprintf(ptr, ##__VA_ARGS__)
@@ -85,9 +87,12 @@ static inline void BTC_TRACE(const char *ptr)
 #define		BTC_ANT_PATH_WIFI			0
 #define		BTC_ANT_PATH_BT				1
 #define		BTC_ANT_PATH_PTA			2
+#define		BTC_ANT_PATH_WIFI5G			3
+#define		BTC_ANT_PATH_AUTO			4
 /* dual Antenna definition */
 #define		BTC_ANT_WIFI_AT_MAIN			0
 #define		BTC_ANT_WIFI_AT_AUX			1
+#define		BTC_ANT_WIFI_AT_DIVERSITY	2
 /* coupler Antenna definition */
 #define		BTC_ANT_WIFI_AT_CPL_MAIN		0
 #define		BTC_ANT_WIFI_AT_CPL_AUX			1
@@ -236,6 +241,7 @@ enum btc_wifi_traffic_dir {
 enum btc_wifi_pnp {
 	BTC_WIFI_PNP_WAKE_UP	= 0x0,
 	BTC_WIFI_PNP_SLEEP	= 0x1,
+	BTC_WIFI_PNP_SLEEP_KEEP_ANT	= 0x2,
 	BTC_WIFI_PNP_MAX
 };
 
@@ -295,6 +301,8 @@ enum btc_get_type {
 	BTC_GET_BL_EXT_SWITCH,
 	BTC_GET_BL_WIFI_IS_IN_MP_MODE,
 	BTC_GET_BL_IS_ASUS_8723B,
+	BTC_GET_BL_FW_READY,
+	BTC_GET_BL_RF4CE_CONNECTED,
 
 	/* type s32 */
 	BTC_GET_S4_WIFI_RSSI,
@@ -339,6 +347,7 @@ enum btc_vendor {
 enum btc_set_type {
 	/* type bool */
 	BTC_SET_BL_BT_DISABLE,
+	BTC_SET_BL_BT_ENABLE_DISABLE_CHANGE,
 	BTC_SET_BL_BT_TRAFFIC_BUSY,
 	BTC_SET_BL_BT_LIMITED_DIG,
 	BTC_SET_BL_FORCE_TO_ROAM,
@@ -357,7 +366,6 @@ enum btc_set_type {
 	BTC_SET_ACT_GET_BT_RSSI,
 	BTC_SET_ACT_AGGREGATE_CTRL,
 	BTC_SET_ACT_ANTPOSREGRISTRY_CTRL,
-
 	/* ===== for 1Ant ====== */
 	/* type bool */
 
@@ -402,6 +410,7 @@ enum btc_notify_type_lps {
 enum btc_notify_type_scan {
 	BTC_SCAN_FINISH = 0x0,
 	BTC_SCAN_START = 0x1,
+	BTC_SCAN_START_2G = 0x2,
 	BTC_SCAN_MAX
 };
 
@@ -416,6 +425,8 @@ enum btc_notify_type_switchband {
 enum btc_notify_type_associate {
 	BTC_ASSOCIATE_FINISH = 0x0,
 	BTC_ASSOCIATE_START = 0x1,
+	BTC_ASSOCIATE_5G_FINISH = 0x2,
+	BTC_ASSOCIATE_5G_START = 0x3,
 	BTC_ASSOCIATE_MAX
 };
 
@@ -538,6 +549,7 @@ struct btc_bt_info {
 	u16	bt_real_fw_ver;
 	u8	bt_fw_ver;
 	u32	get_bt_fw_ver_cnt;
+	u32	bt_get_fw_ver;
 	bool	miracast_plus_bt;
 
 	bool	bt_disable_low_pwr;
