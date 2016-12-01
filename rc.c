@@ -141,10 +141,15 @@ static void _rtl_rc_rate_set_series(struct rtl_priv *rtlpriv,
 			if (sta && (sta->vht_cap.vht_supported))
 				rate->flags |= IEEE80211_TX_RC_80_MHZ_WIDTH;
 		} else {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 			if (mac->bw_80)
 				rate->flags |= IEEE80211_TX_RC_80_MHZ_WIDTH;
 			else if (mac->bw_40)
 				rate->flags |= IEEE80211_TX_RC_40_MHZ_WIDTH;
+#else
+			if (mac->bw_40)
+				rate->flags |= IEEE80211_TX_RC_40_MHZ_WIDTH;
+#endif
 		}
 
 		if (sgi_20 || sgi_40 || sgi_80)
