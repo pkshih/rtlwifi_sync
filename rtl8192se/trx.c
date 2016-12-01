@@ -235,15 +235,28 @@ static void _rtl92se_translate_rx_signal_stuff(struct ieee80211_hw *hw,
 	type = WLAN_FC_GET_TYPE(fc);
 	praddr = hdr->addr1;
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0))
+	packet_matchbssid = ((IEEE80211_FTYPE_CTL != type) &&
+	     (compare_ether_addr(mac->bssid, (fc & IEEE80211_FCTL_TODS) ?
+				  hdr->addr1 : (fc & IEEE80211_FCTL_FROMDS) ?
+				  hdr->addr2 : hdr->addr3)) &&
+	     (!pstatus->hwerror) && (!pstatus->crc) && (!pstatus->icv));
+#else
 	packet_matchbssid = ((IEEE80211_FTYPE_CTL != type) &&
 	     ether_addr_equal(mac->bssid,
 			      (cfc & IEEE80211_FCTL_TODS) ? hdr->addr1 :
 			      (cfc & IEEE80211_FCTL_FROMDS) ? hdr->addr2 :
 			      hdr->addr3) &&
 	     (!pstats->hwerror) && (!pstats->crc) && (!pstats->icv));
+#endif
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0))
+	packet_toself = packet_matchbssid &&
+	    (compare_ether_addr(praddr, rtlefuse->dev_addr));
+#else
 	packet_toself = packet_matchbssid &&
 	    ether_addr_equal(praddr, rtlefuse->dev_addr);
+#endif
 
 	if (ieee80211_is_beacon(fc))
 		packet_beacon = true;
@@ -282,8 +295,13 @@ bool rtl92se_rx_query_desc(struct ieee80211_hw *hw, struct rtl_stats *stats,
 	if (stats->hwerror)
 		return false;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
 	rx_status->freq = hw->conf.chandef.chan->center_freq;
 	rx_status->band = hw->conf.chandef.chan->band;
+#else
+	rx_status->freq = hw->conf.channel->center_freq;
+	rx_status->band = hw->conf.channel->band;
+#endif
 
 	if (stats->crc)
 		rx_status->flag |= RX_FLAG_FAILED_FCS_CRC;

@@ -162,6 +162,10 @@ static void _rtl_reg_apply_beaconing_flags(struct wiphy *wiphy,
 	struct ieee80211_supported_band *sband;
 	const struct ieee80211_reg_rule *reg_rule;
 	struct ieee80211_channel *ch;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 9, 0))
+	u32 bandwidth = 0;
+	int r;
+#endif
 	unsigned int i;
 
 	for (band = 0; band < NUM_NL80211_BANDS; band++) {
@@ -177,10 +181,17 @@ static void _rtl_reg_apply_beaconing_flags(struct wiphy *wiphy,
 			    (ch->flags & IEEE80211_CHAN_RADAR))
 				continue;
 			if (initiator == NL80211_REGDOM_SET_BY_COUNTRY_IE) {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0))
 				reg_rule = freq_reg_info(wiphy,
 							 ch->center_freq);
 				if (IS_ERR(reg_rule))
 					continue;
+#else
+				r = freq_reg_info(wiphy, ch->center_freq,
+						  bandwidth, &reg_rule);
+				if (r)
+					continue;
+#endif
 				/*
 				 *If 11d had a rule for this channel ensure
 				 *we enable adhoc/beaconing if it allows us to
@@ -213,6 +224,10 @@ static void _rtl_reg_apply_active_scan_flags(struct wiphy *wiphy,
 	struct ieee80211_supported_band *sband;
 	struct ieee80211_channel *ch;
 	const struct ieee80211_reg_rule *reg_rule;
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 9, 0))
+	u32 bandwidth = 0;
+	int r;
+#endif
 
 	if (!wiphy->bands[NL80211_BAND_2GHZ])
 		return;
@@ -240,16 +255,26 @@ static void _rtl_reg_apply_active_scan_flags(struct wiphy *wiphy,
 	 */
 
 	ch = &sband->channels[11];	/* CH 12 */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0))
 	reg_rule = freq_reg_info(wiphy, ch->center_freq);
 	if (!IS_ERR(reg_rule)) {
+#else
+	r = freq_reg_info(wiphy, ch->center_freq, bandwidth, &reg_rule);
+	if (!r) {
+#endif
 		if (!(reg_rule->flags & NL80211_RRF_PASSIVE_SCAN))
 			if (ch->flags & IEEE80211_CHAN_PASSIVE_SCAN)
 				ch->flags &= ~IEEE80211_CHAN_PASSIVE_SCAN;
 	}
 
 	ch = &sband->channels[12];	/* CH 13 */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0))
 	reg_rule = freq_reg_info(wiphy, ch->center_freq);
 	if (!IS_ERR(reg_rule)) {
+#else
+	r = freq_reg_info(wiphy, ch->center_freq, bandwidth, &reg_rule);
+	if (!r) {
+#endif
 		if (!(reg_rule->flags & NL80211_RRF_PASSIVE_SCAN))
 			if (ch->flags & IEEE80211_CHAN_PASSIVE_SCAN)
 				ch->flags &= ~IEEE80211_CHAN_PASSIVE_SCAN;
@@ -375,19 +400,33 @@ static const struct ieee80211_regdomain *_rtl_regdomain_select(
 	}
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0))
 static int _rtl_regd_init_wiphy(struct rtl_regulatory *reg,
 				struct wiphy *wiphy,
 				void (*reg_notifier)(struct wiphy *wiphy,
 						     struct regulatory_request *
 						     request))
+#else
+static int _rtl_regd_init_wiphy(struct rtl_regulatory *reg,
+				struct wiphy *wiphy,
+				int (*reg_notifier)(struct wiphy *wiphy,
+						    struct regulatory_request *
+						    request))
+#endif
 {
 	const struct ieee80211_regdomain *regd;
 
 	wiphy->reg_notifier = reg_notifier;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
 	wiphy->regulatory_flags |= REGULATORY_CUSTOM_REG;
 	wiphy->regulatory_flags &= ~REGULATORY_STRICT_REG;
 	wiphy->regulatory_flags &= ~REGULATORY_DISABLE_BEACON_HINTS;
+#else
+	wiphy->flags |= WIPHY_FLAG_CUSTOM_REGULATORY;
+	wiphy->flags &= ~WIPHY_FLAG_STRICT_REGULATORY;
+	wiphy->flags &= ~WIPHY_FLAG_DISABLE_BEACON_HINTS;
+#endif
 	regd = _rtl_regdomain_select(reg);
 	wiphy_apply_custom_regulatory(wiphy, regd);
 	_rtl_reg_apply_radar_flags(wiphy);
@@ -427,9 +466,15 @@ static u8 channel_plan_to_country_code(u8 channelplan)
 	}
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0))
 int rtl_regd_init(struct ieee80211_hw *hw,
 		  void (*reg_notifier)(struct wiphy *wiphy,
 				       struct regulatory_request *request))
+#else
+int rtl_regd_init(struct ieee80211_hw *hw,
+		  int (*reg_notifier)(struct wiphy *wiphy,
+				      struct regulatory_request *request))
+#endif
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct wiphy *wiphy = hw->wiphy;
@@ -472,6 +517,7 @@ int rtl_regd_init(struct ieee80211_hw *hw,
 	return 0;
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 9, 0))
 void rtl_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request)
 {
 	struct ieee80211_hw *hw = wiphy_to_ieee80211_hw(wiphy);
@@ -481,3 +527,14 @@ void rtl_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request)
 
 	_rtl_reg_notifier_apply(wiphy, request, &rtlpriv->regd);
 }
+#else
+int rtl_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request)
+{
+	struct ieee80211_hw *hw = wiphy_to_ieee80211_hw(wiphy);
+	struct rtl_priv *rtlpriv = rtl_priv(hw);
+
+	RT_TRACE(rtlpriv, COMP_REGD, DBG_LOUD, "\n");
+
+	return _rtl_reg_notifier_apply(wiphy, request, &rtlpriv->regd);
+}
+#endif

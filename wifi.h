@@ -39,6 +39,17 @@
 #include <linux/version.h>
 #include "debug.h"
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 8, 0))
+#define CONFIG_HAVE_ARCH_WITHIN_STACK_FRAMES 1
+#endif
+
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(4, 7, 0))
+#define ieee80211_band nl80211_band
+#define IEEE80211_BAND_2GHZ NL80211_BAND_2GHZ
+#define IEEE80211_BAND_5GHZ NL80211_BAND_5GHZ
+#define IEEE80211_NUM_BANDS NUM_NL80211_BANDS
+#endif
+
 #if (LINUX_VERSION_CODE < KERNEL_VERSION(4, 7, 0))
 #define NUM_NL80211_BANDS	IEEE80211_NUM_BANDS
 #endif
@@ -2298,15 +2309,24 @@ struct rtl_intf_ops {
 	bool (*check_buddy_priv)(struct ieee80211_hw *hw,
 				 struct rtl_priv **buddy_priv);
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 0))
+	int (*adapter_tx)(struct ieee80211_hw *hw, struct sk_buff *skb,
+			   struct rtl_tcb_desc *ptcb_desc);
+#else
 	int (*adapter_tx) (struct ieee80211_hw *hw,
 			   struct ieee80211_sta *sta,
 			   struct sk_buff *skb,
 			   struct rtl_tcb_desc *ptcb_desc);
+#endif
 	void (*flush)(struct ieee80211_hw *hw, u32 queues, bool drop);
 	int (*reset_trx_ring) (struct ieee80211_hw *hw);
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 0))
+	bool (*waitq_insert)(struct ieee80211_hw *hw, struct sk_buff *skb);
+#else
 	bool (*waitq_insert) (struct ieee80211_hw *hw,
 			      struct ieee80211_sta *sta,
 			      struct sk_buff *skb);
+#endif
 
 	/*pci */
 	void (*disable_aspm) (struct ieee80211_hw *hw);
@@ -2823,6 +2843,10 @@ struct rtl_c2hcmd {
 	u8 len;
 	u8 *val;
 };
+
+#if (LINUX_VERSION_CODE <= KERNEL_VERSION(3, 11, 0))
+#define cfg80211_pkt_pattern cfg80211_wowlan_trig_pkt_pattern
+#endif
 
 struct rtl_bssid_entry {
 	struct list_head list;
