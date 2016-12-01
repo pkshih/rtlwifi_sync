@@ -239,6 +239,7 @@ static void _rtl_init_hw_ht_capab(struct ieee80211_hw *hw,
 	}
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
 static void _rtl_init_hw_vht_capab(struct ieee80211_hw *hw,
 				   struct ieee80211_sta_vht_cap *vht_cap)
 {
@@ -312,6 +313,7 @@ static void _rtl_init_hw_vht_capab(struct ieee80211_hw *hw,
 			cpu_to_le16(MAX_BIT_RATE_SHORT_GI_1NSS_80MHZ_MCS9);
 	}
 }
+#endif
 
 #if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 14, 0))
 
@@ -450,7 +452,9 @@ static void _rtl_init_mac80211(struct ieee80211_hw *hw)
 		/* <3> init ht cap base on ant_num */
 		_rtl_init_hw_ht_capab(hw, &sband->ht_cap);
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
 		_rtl_init_hw_vht_capab(hw, &sband->vht_cap);
+#endif
 		/* <4> set mac->sband to wiphy->sband */
 		hw->wiphy->bands[NL80211_BAND_5GHZ] = sband;
 	} else {
@@ -482,7 +486,9 @@ static void _rtl_init_mac80211(struct ieee80211_hw *hw)
 			/* <3> init ht cap base on ant_num */
 			_rtl_init_hw_ht_capab(hw, &sband->ht_cap);
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
 			_rtl_init_hw_vht_capab(hw, &sband->vht_cap);
+#endif
 			/* <4> set mac->sband to wiphy->sband */
 			hw->wiphy->bands[NL80211_BAND_5GHZ] = sband;
 		} else {
@@ -573,7 +579,20 @@ static void _rtl_init_mac80211(struct ieee80211_hw *hw)
 			rtlpriv->wowlan.pattern_min_len = MIN_WOL_PATTERN_SIZE;
 			rtlpriv->wowlan.pattern_max_len = MAX_WOL_PATTERN_SIZE;
 		}
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 11, 0))
 		hw->wiphy->wowlan = &rtlpriv->wowlan;
+#else /* LINUX_VERSION_CODE < KERNEL_VERSION(3, 11, 0) */
+		if (rtlpriv->psc.wo_wlan_mode & WAKE_ON_MAGIC_PACKET)
+			hw->wiphy->wowlan.flags = WIPHY_WOWLAN_MAGIC_PKT;
+		if (rtlpriv->psc.wo_wlan_mode & WAKE_ON_PATTERN_MATCH) {
+			hw->wiphy->wowlan.n_patterns =
+				MAX_SUPPORT_WOL_PATTERN_NUM;
+			hw->wiphy->wowlan.pattern_min_len =
+				MIN_WOL_PATTERN_SIZE;
+			hw->wiphy->wowlan.pattern_max_len =
+				MAX_WOL_PATTERN_SIZE;
+		}
+#endif
 	}
 #endif
 
@@ -598,7 +617,13 @@ static void _rtl_init_deferred_work(struct ieee80211_hw *hw)
 		    rtl_easy_concurrent_retrytimer_callback, (unsigned long)hw);
 	/* <2> work queue */
 	rtlpriv->works.hw = hw;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 3, 0))
 	rtlpriv->works.rtl_wq = alloc_workqueue("%s", 0, 0, rtlpriv->cfg->name);
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(2, 6, 37))
+	rtlpriv->works.rtl_wq = alloc_workqueue(rtlpriv->cfg->name, 0, 0);
+#else
+	rtlpriv->works.rtl_wq = create_workqueue(rtlpriv->cfg->name);
+#endif
 	INIT_DELAYED_WORK(&rtlpriv->works.watchdog_wq,
 			  (void *)rtl_watchdog_wq_callback);
 	INIT_DELAYED_WORK(&rtlpriv->works.ips_nic_off_wq,
@@ -771,9 +796,15 @@ static void _rtl_query_shortgi(struct ieee80211_hw *hw,
 
 	sgi_40 = sta->ht_cap.cap & IEEE80211_HT_CAP_SGI_40;
 	sgi_20 = sta->ht_cap.cap & IEEE80211_HT_CAP_SGI_20;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 	sgi_80 = sta->vht_cap.cap & IEEE80211_VHT_CAP_SHORT_GI_80;
+#endif
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 	if ((!sta->ht_cap.ht_supported) && (!sta->vht_cap.vht_supported))
+#else
+	if (!sta->ht_cap.ht_supported)
+#endif
 		return;
 
 	if (!sgi_40 && !sgi_20)
@@ -786,7 +817,9 @@ static void _rtl_query_shortgi(struct ieee80211_hw *hw,
 		 mac->opmode == NL80211_IFTYPE_ADHOC ||
 		 mac->opmode == NL80211_IFTYPE_MESH_POINT) {
 		bw_40 = sta->ht_cap.cap & IEEE80211_HT_CAP_SUP_WIDTH_20_40;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 		bw_80 = sta->vht_cap.vht_supported;
+#endif
 	}
 
 	if (bw_80) {
@@ -1020,6 +1053,7 @@ static void _rtl_query_bandwidth_mode(struct ieee80211_hw *hw,
 
 	tcb_desc->packet_bw = HT_CHANNEL_WIDTH_20_40;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 	if (rtlpriv->rtlhal.hw_type == HARDWARE_TYPE_RTL8812AE ||
 	    rtlpriv->rtlhal.hw_type == HARDWARE_TYPE_RTL8821AE ||
 	    (rtlpriv->cfg->spec_ver & RTL_SPEC_SUPPORT_VHT)) {
@@ -1038,8 +1072,10 @@ static void _rtl_query_bandwidth_mode(struct ieee80211_hw *hw,
 			return;
 		tcb_desc->packet_bw = HT_CHANNEL_WIDTH_80;
 	}
+#endif
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 static u8 _rtl_get_vht_highest_n_rate(struct ieee80211_hw *hw,
 				      struct ieee80211_sta *sta)
 {
@@ -1077,6 +1113,7 @@ static u8 _rtl_get_vht_highest_n_rate(struct ieee80211_hw *hw,
 
 	return hw_rate;
 }
+#endif
 
 static u8 _rtl_get_highest_n_rate(struct ieee80211_hw *hw,
 				  struct ieee80211_sta *sta)
@@ -1418,10 +1455,14 @@ void rtl_get_tcb_desc(struct ieee80211_hw *hw,
 			 *and N rate will all be controlled by FW
 			 *when tcb_desc->use_driver_rate = false
 			 */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 			if (sta && sta->vht_cap.vht_supported) {
 				tcb_desc->hw_rate =
 				_rtl_get_vht_highest_n_rate(hw, sta);
 			} else {
+#else
+			{
+#endif
 				if (sta && (sta->ht_cap.ht_supported)) {
 					tcb_desc->hw_rate =
 						_rtl_get_highest_n_rate(hw, sta);
@@ -1534,8 +1575,13 @@ static void process_agg_start(struct ieee80211_hw *hw,
 
 	skb_delba = rtl_make_del_ba(hw, hdr->addr2, hdr->addr3, tid);
 	if (skb_delba) {
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
 		rx_status.freq = hw->conf.chandef.chan->center_freq;
 		rx_status.band = hw->conf.chandef.chan->band;
+#else
+		rx_status.freq = hw->conf.channel->center_freq;
+		rx_status.band = hw->conf.channel->band;
+#endif
 		rx_status.flag |= RX_FLAG_DECRYPTED;
 		rx_status.flag |= RX_FLAG_MACTIME_START;
 		rx_status.rate_idx = 0;
@@ -2031,7 +2077,11 @@ void rtl_beacon_statistic(struct ieee80211_hw *hw, struct sk_buff *skb)
 		return;
 
 	/* and only beacons from the associated BSSID, please */
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0))
+	if (compare_ether_addr(hdr->addr3, rtlpriv->mac80211.bssid))
+#else
 	if (!ether_addr_equal(hdr->addr3, rtlpriv->mac80211.bssid))
+#endif
 		return;
 
 	rtlpriv->link_info.bcn_rx_inperiod++;
@@ -2548,8 +2598,18 @@ int rtl_send_smps_action(struct ieee80211_hw *hw,
 		/* rtlpriv->cfg->ops->update_rate_tbl(hw, sta, 0); */
 
 		info->control.rates[0].idx = 0;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
 		info->band = hw->conf.chandef.chan->band;
 		rtlpriv->intf_ops->adapter_tx(hw, sta, skb, &tcb_desc);
+#else
+		info->band = hw->conf.channel->band;
+	#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 0))
+		info->control.sta = sta;
+		rtlpriv->intf_ops->adapter_tx(hw, skb, &tcb_desc);
+	#else
+		rtlpriv->intf_ops->adapter_tx(hw, sta, skb, &tcb_desc);
+	#endif
+#endif
 	}
 	return 1;
 
@@ -2894,7 +2954,11 @@ void rtl_recognize_peer(struct ieee80211_hw *hw, u8 *data, unsigned int len)
 		return;
 
 	/* and only beacons from the associated BSSID, please */
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0))
+	if (compare_ether_addr(hdr->addr3, rtlpriv->mac80211.bssid))
+#else
 	if (!ether_addr_equal_64bits(hdr->addr3, rtlpriv->mac80211.bssid))
+#endif
 		return;
 
 	if (rtl_find_221_ie(hw, data, len))

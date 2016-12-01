@@ -27,7 +27,9 @@
 #include "base.h"
 #include "ps.h"
 #include "rtl8192c/fw_common.h"
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 2, 0))
 #include <linux/export.h>
+#endif
 #include <linux/module.h>
 
 MODULE_AUTHOR("lizhaoming	<chaoming_li@realsil.com.cn>");
@@ -999,14 +1001,24 @@ static void _rtl_usb_tx_preprocess(struct ieee80211_hw *hw,
 		rtlpriv->cfg->ops->led_control(hw, LED_CTL_TX);
 }
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 0))
+static int rtl_usb_tx(struct ieee80211_hw *hw,
+		      struct sk_buff *skb,
+		      struct rtl_tcb_desc *dummy)
+#else
 static int rtl_usb_tx(struct ieee80211_hw *hw,
 		      struct ieee80211_sta *sta,
 		      struct sk_buff *skb,
 		      struct rtl_tcb_desc *dummy)
+#endif
 {
 	struct rtl_usb *rtlusb = rtl_usbdev(rtl_usbpriv(hw));
 	struct rtl_hal *rtlhal = rtl_hal(rtl_priv(hw));
 	struct ieee80211_hdr *hdr = (struct ieee80211_hdr *)(skb->data);
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 0))
+	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
+	struct ieee80211_sta *sta = info->control.sta;
+#endif
 	__le16 fc = hdr->frame_control;
 	u16 hw_queue;
 
@@ -1022,9 +1034,14 @@ err_free:
 	return NETDEV_TX_OK;
 }
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 7, 0))
+static bool rtl_usb_tx_chk_waitq_insert(struct ieee80211_hw *hw,
+					struct sk_buff *skb)
+#else
 static bool rtl_usb_tx_chk_waitq_insert(struct ieee80211_hw *hw,
 					struct ieee80211_sta *sta,
 					struct sk_buff *skb)
+#endif
 {
 	return false;
 }

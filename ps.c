@@ -26,7 +26,9 @@
 #include "wifi.h"
 #include "base.h"
 #include "ps.h"
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 2, 0))
 #include <linux/export.h>
+#endif
 #include "btcoexist/rtl_btc.h"
 
 bool rtl_ps_enable_nic(struct ieee80211_hw *hw)
@@ -529,7 +531,11 @@ void rtl_swlps_beacon(struct ieee80211_hw *hw, void *data, unsigned int len)
 		return;
 
 	/* and only beacons from the associated BSSID, please */
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0))
+	if (compare_ether_addr(hdr->addr3, rtlpriv->mac80211.bssid))
+#else
 	if (!ether_addr_equal_64bits(hdr->addr3, rtlpriv->mac80211.bssid))
+#endif
 		return;
 
 	rtlpriv->psc.last_beacon = jiffies;
@@ -1009,7 +1015,11 @@ void rtl_p2p_info(struct ieee80211_hw *hw, void *data, unsigned int len)
 		return;
 
 	/* and only beacons from the associated BSSID, please */
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0))
+	if (compare_ether_addr(hdr->addr3, rtlpriv->mac80211.bssid))
+#else
 	if (!ether_addr_equal_64bits(hdr->addr3, rtlpriv->mac80211.bssid))
+#endif
 		return;
 
 	/* check if this really is a beacon */

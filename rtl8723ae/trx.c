@@ -257,6 +257,15 @@ static void translate_rx_signal_stuff(struct ieee80211_hw *hw,
 	type = WLAN_FC_GET_TYPE(hdr->frame_control);
 	praddr = hdr->addr1;
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0))
+	packet_matchbssid = ((IEEE80211_FTYPE_CTL != type) &&
+	     (compare_ether_addr(mac->bssid, (fc & IEEE80211_FCTL_TODS) ?
+				  hdr->addr1 : (fc & IEEE80211_FCTL_FROMDS) ?
+				  hdr->addr2 : hdr->addr3)) &&
+	     (!pstatus->hwerror) && (!pstatus->crc) && (!pstatus->icv));
+	packet_toself = packet_matchbssid &&
+	    (compare_ether_addr(praddr, rtlefuse->dev_addr));
+#else
 	packet_matchbssid = ((IEEE80211_FTYPE_CTL != type) &&
 		(ether_addr_equal(mac->bssid, (fc & IEEE80211_FCTL_TODS) ?
 		 hdr->addr1 : (fc & IEEE80211_FCTL_FROMDS) ?
@@ -266,6 +275,7 @@ static void translate_rx_signal_stuff(struct ieee80211_hw *hw,
 
 	packet_toself = packet_matchbssid &&
 	    (ether_addr_equal(praddr, rtlefuse->dev_addr));
+#endif
 
 	if (ieee80211_is_beacon(hdr->frame_control))
 		packet_beacon = true;
@@ -307,8 +317,13 @@ bool rtl8723e_rx_query_desc(struct ieee80211_hw *hw,
 
 	status->is_cck = RX_HAL_IS_CCK_RATE(status->rate);
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 10, 0))
 	rx_status->freq = hw->conf.chandef.chan->center_freq;
 	rx_status->band = hw->conf.chandef.chan->band;
+#else
+	rx_status->freq = hw->conf.channel->center_freq;
+	rx_status->band = hw->conf.channel->band;
+#endif
 
 	hdr = (struct ieee80211_hdr *)(skb->data + status->rx_drvinfo_size
 			+ status->rx_bufshift);

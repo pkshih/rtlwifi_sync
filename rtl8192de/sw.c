@@ -397,6 +397,9 @@ spinlock_t globalmutex_power;
 spinlock_t globalmutex_for_fwdownload;
 spinlock_t globalmutex_for_power_and_efuse;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 4, 0))
+module_pci_driver(rtl92de_driver);
+#else
 static int __init rtl92de_module_init(void)
 {
 	int ret = 0;
@@ -418,3 +421,4 @@ static void __exit rtl92de_module_exit(void)
 
 module_init(rtl92de_module_init);
 module_exit(rtl92de_module_exit);
+#endif
