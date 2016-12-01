@@ -2118,7 +2118,7 @@ static void _rtl8723be_read_adapter_info(struct ieee80211_hw *hw,
 						 hwinfo);
 
 	if (rtlpriv->btcoexist.btc_info.btcoexist == 1)
-		rtlefuse->board_type |= ODM_BOARD_BT;
+		rtlefuse->board_type |= BIT(2);	/* ODM_BOARD_BT */
 
 	rtlhal->board_type = rtlefuse->board_type;
 	RT_TRACE(rtlpriv, COMP_INIT, DBG_LOUD,
