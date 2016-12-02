@@ -29,22 +29,17 @@
 
 #ifdef CONFIG_RTLWIFI_DEBUG
 
-#define BTC_SPRINTF(ptr, ...)	snprintf(ptr, ##__VA_ARGS__)
-#define BTC_TRACE(fmt)							\
+#define BTC_PRINTF(fmt, ...)						\
 do {									\
 	struct rtl_priv *rtlpriv = gl_bt_coexist.adapter;		\
 	if (rtlpriv == NULL)						\
 		break;							\
-	RT_TRACE_STRING(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, fmt);	\
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, fmt, ##__VA_ARGS__); \
 } while (0)
 
 #else
 
-static inline void BTC_SPRINTF(char *ptr, ...)
-{
-}
-
-static inline void BTC_TRACE(const char *ptr)
+static inline void BTC_PRINTF(char *ptr, ...)
 {
 }
 
