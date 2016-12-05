@@ -35,6 +35,7 @@
 #include <linux/usb.h>
 #include <net/mac80211.h>
 #include <linux/completion.h>
+#include <linux/thread_info.h>
 #include "debug.h"
 
 #define	MASKBYTE0				0xff
