@@ -188,7 +188,7 @@
 	SET_BITS_TO_LE_4BYTE(__pdesc+20, 13, 4, __val)
 
 #define SET_TX_DESC_SW_DEFINE(__pdesc, __val)	\
-	SET_BITS_TO_LE_4BYTE(__pdesc+24, 0, 12, __val)
+	SET_BITS_TO_LE_4BYTE(__pdesc + 24, 0, 12, __val)
 #define SET_TX_DESC_MBSSID(__pdesc, __val)		\
 	SET_BITS_TO_LE_4BYTE(__pdesc+24, 12, 4, __val)
 #define SET_TX_DESC_ANTSEL_A(__pdesc, __val)	\
