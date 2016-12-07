@@ -90,7 +90,11 @@ static int _rtl8822be_rate_mapping(struct ieee80211_hw *hw,
 
 
 	/* legacy */
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0))
 	if (hw->conf.chandef.chan->band == IEEE80211_BAND_2GHZ) {
+#else
+	if (hw->conf.channel->band == IEEE80211_BAND_2GHZ) {
+#endif
 		switch (desc_rate) {
 		case DESC_RATE1M:
 			rate_idx = 0;
@@ -493,8 +497,13 @@ bool rtl8822be_rx_query_desc(struct ieee80211_hw *hw,
 		RT_TRACE(rtlpriv, COMP_RXDESC , DBG_LOUD,
 			 "GGGGGGGGGGGGGet Wakeup Packet!! WakeMatch=%d\n",
 			 status->wake_match);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,10,0))
 	rx_status->freq = hw->conf.chandef.chan->center_freq;
 	rx_status->band = hw->conf.chandef.chan->band;
+#else
+	rx_status->freq = hw->conf.channel->center_freq;
+	rx_status->band = hw->conf.channel->band;
+#endif
 
 	if (phystatus)
 		p_phystrpt = (skb->data + status->rx_bufshift + 24);
@@ -507,10 +516,14 @@ bool rtl8822be_rx_query_desc(struct ieee80211_hw *hw,
 
 	if (status->is_ht)
 		rx_status->flag |= RX_FLAG_HT;
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 	if (status->is_vht)
 		rx_status->flag |= RX_FLAG_VHT;
+#endif
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 	rx_status->vht_nss = status->vht_nss;
+#endif
 
 	rx_status->flag |= RX_FLAG_MACTIME_START;
 
@@ -531,7 +544,13 @@ bool rtl8822be_rx_query_desc(struct ieee80211_hw *hw,
 				return false;
 		}
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3,15,0)) ||	\
+    ((LINUX_VERSION_CODE >= KERNEL_VERSION(3,13,0)) &&	\
+    defined(UTS_UBUNTU_RELEASE_ABI))
 		if ((!_ieee80211_is_robust_mgmt_frame(hdr)) &&
+#else
+		if ((!ieee80211_is_robust_mgmt_frame(hdr)) &&
+#endif
 		    (ieee80211_has_protected(hdr->frame_control)))
 			rx_status->flag |= RX_FLAG_DECRYPTED;
 		else
@@ -559,7 +578,13 @@ bool rtl8822be_rx_query_desc(struct ieee80211_hw *hw,
 	if (status->rx_packet_bw == HT_CHANNEL_WIDTH_20_40)
 		rx_status->flag |= RX_FLAG_40MHZ;
 	else if (status->rx_packet_bw == HT_CHANNEL_WIDTH_80)
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 15, 0))
 		rx_status->vht_flag |= RX_VHT_FLAG_80MHZ;
+#elif (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
+		rx_status->flag |= RX_FLAG_80MHZ;
+#else
+		;
+#endif
 
 	return true;
 }
