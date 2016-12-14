@@ -27,6 +27,10 @@
 
 #include "halmac_api.h"
 
+/* HALMAC Definition for Driver */
+#define RTL_HALMAC_H2C_MAX_SIZE		HALMAC_H2C_CMD_ORIGINAL_SIZE_88XX
+#define RTL_HALMAC_BA_SSN_RPT_SIZE	4
+
 #define rtlpriv_to_halmac(priv)                                                \
 	((struct halmac_adapter *)((priv)->halmac.internal))
 
@@ -35,7 +39,21 @@
 #define MESSAGE_BOX_SIZE 4
 #define EX_MESSAGE_BOX_SIZE 4
 
+typedef enum _RTL_HALMAC_MODE {
+	RTL_HALMAC_MODE_NORMAL,
+	RTL_HALMAC_MODE_WIFI_TEST,
+} RTL_HALMAC_MODE;
+
 /* HALMAC API for Driver(HAL) */
+#if 0
+u8 rtl_halmac_read8(struct intf_hdl *, u32 addr);
+u16 rtl_halmac_read16(struct intf_hdl *, u32 addr);
+u32 rtl_halmac_read32(struct intf_hdl *, u32 addr);
+int rtl_halmac_write8(struct intf_hdl *, u32 addr, u8 value);
+int rtl_halmac_write16(struct intf_hdl *, u32 addr, u16 value);
+int rtl_halmac_write32(struct intf_hdl *, u32 addr, u32 value);
+#endif
+
 int rtl_halmac_init_adapter(struct rtl_priv *);
 int rtl_halmac_deinit_adapter(struct rtl_priv *);
 int rtl_halmac_poweron(struct rtl_priv *);
@@ -84,6 +102,19 @@ int rtl_halmac_get_drv_info_sz(struct rtl_priv *d, u8 *sz);
 int rtl_halmac_get_rsvd_drv_pg_bndy(struct rtl_priv *dvobj, u16 *drv_pg);
 int rtl_halmac_download_rsvd_page(struct rtl_priv *dvobj, u8 pg_offset,
 				  u8 *pbuf, u32 size);
+
+#ifdef CONFIG_SDIO_HCI
+int rtl_halmac_query_tx_page_num(struct rtl_priv *);
+int rtl_halmac_get_tx_queue_page_num(struct rtl_priv *, u8 queue, u32 *page);
+u32 rtl_halmac_sdio_get_tx_addr(struct rtl_priv *, u8 *desc, u32 size);
+int rtl_halmac_sdio_tx_allowed(struct rtl_priv *, u8 *buf, u32 size);
+u32 rtl_halmac_sdio_get_rx_addr(struct rtl_priv *, u8 *seq);
+#endif /* CONFIG_SDIO_HCI */
+
+#ifdef CONFIG_USB_HCI
+u8 rtl_halmac_usb_get_bulkout_id(struct rtl_priv *, u8 *buf, u32 size);
+u8 rtl_halmac_switch_usb_mode(struct rtl_priv *d, enum RTL_USB_SPEED usb_mode);
+#endif /* CONFIG_USB_HCI */
 
 int rtl_halmac_chk_txdesc(struct rtl_priv *rtlpriv, u8 *txdesc, u32 size);
 
