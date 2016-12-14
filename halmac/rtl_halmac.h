@@ -27,6 +27,29 @@
 
 #include "halmac_api.h"
 
+/* for uncooked halmac */
+#ifdef PLATFORM_RTL_FREE	/* borrow this flag to check */
+#define halmac_drv_info	_HALMAC_DRV_INFO
+#define halmac_hw_id _HALMAC_HW_ID
+#define halmac_cmd_process_status _HALMAC_CMD_PROCESS_STATUS
+#define halmac_ret_status _HALMAC_RET_STATUS
+#define halmac_adapter _HALMAC_ADAPTER
+#define halmac_api _HALMAC_API
+#define halmac_rxagg_cfg _HALMAC_RXAGG_CFG
+#define hal_fifo_sel _HAL_FIFO_SEL
+#define halmac_wlan_addr _HALMAC_WLAN_ADDR
+#define address Address
+#define halmac_pg_efuse_info _HALMAC_PG_EFUSE_INFO
+#define efuse_map pEfuse_map
+#define efuse_mask pEfuse_mask
+#define halmac_feature_id _HALMAC_FEATURE_ID
+#define halmac_fw_version _HALMAC_FW_VERSION
+#define halmac_general_info _HALMAC_GENERAL_INFO
+#define halmac_rf_type _HALMAC_RF_TYPE
+#define halmac_interface _HALMAC_INTERFACE
+#define halmac_platform_api _HALMAC_PLATFORM_API
+#endif
+
 /* HALMAC Definition for Driver */
 #define RTL_HALMAC_H2C_MAX_SIZE		HALMAC_H2C_CMD_ORIGINAL_SIZE_88XX
 #define RTL_HALMAC_BA_SSN_RPT_SIZE	4
