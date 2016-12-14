@@ -52,7 +52,7 @@
 #endif
 
 #ifndef BOOL
-	#define BOOL	u8
+	#define BOOL	bool
 #endif
 
 #define HALMAC_INLINE	inline
