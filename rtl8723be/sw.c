@@ -181,8 +181,7 @@ int rtl8723be_init_sw_vars(struct ieee80211_hw *hw)
 	/* for firmware buf */
 	rtlpriv->rtlhal.pfirmware = vzalloc(0x8000);
 	if (!rtlpriv->rtlhal.pfirmware) {
-		RT_TRACE(rtlpriv, COMP_ERR, DBG_EMERG,
-			 "Can't alloc buffer for fw.\n");
+		pr_err("Can't alloc buffer for fw.\n");
 		return 1;
 	}
 
@@ -198,11 +197,10 @@ int rtl8723be_init_sw_vars(struct ieee80211_hw *hw)
 		err = request_firmware_nowait(THIS_MODULE, 1, fw_name,
 					      rtlpriv->io.dev, GFP_KERNEL, hw,
 					      rtl_fw_cb);
-		if (err) {
-			RT_TRACE(rtlpriv, COMP_ERR, DBG_EMERG,
-				 "Failed to request firmware!\n");
-			return 1;
-		}
+	}
+	if (err) {
+		pr_err("Failed to request firmware!\n");
+		return 1;
 	}
 	return 0;
 }
@@ -284,7 +282,7 @@ static struct rtl_mod_params rtl8723be_mod_params = {
 	.fwctrl_lps = true,
 	.msi_support = false,
 	.disable_watchdog = false,
-	.debug = DBG_EMERG,
+	.debug = 0,
 	.debug_mask = 0,
 	.ant_sel = 0,
 };
