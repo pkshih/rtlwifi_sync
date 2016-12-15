@@ -1000,7 +1000,8 @@ void rtl92ee_set_desc(struct ieee80211_hw *hw, u8 *pdesc, bool istx,
 			break;
 		default:
 			WARN_ONCE(true,
-				  "ERR rxdesc :%d not process\n", desc_name);
+				  "rtl8192ee: ERR rxdesc :%d not processed\n",
+				  desc_name);
 			break;
 		}
 	}
@@ -1025,7 +1026,8 @@ u32 rtl92ee_get_desc(u8 *pdesc, bool istx, u8 desc_name)
 #endif
 		default:
 			WARN_ONCE(true,
-				  "ERR txdesc :%d not process\n", desc_name);
+				  "rtl8192ee: ERR txdesc :%d not processed\n",
+				  desc_name);
 			break;
 		}
 	} else {
@@ -1041,7 +1043,8 @@ u32 rtl92ee_get_desc(u8 *pdesc, bool istx, u8 desc_name)
 			break;
 		default:
 			WARN_ONCE(true,
-				  "ERR rxdesc :%d not process\n", desc_name);
+				  "rtl8192ee: ERR rxdesc :%d not processed\n",
+				  desc_name);
 			break;
 		}
 	}

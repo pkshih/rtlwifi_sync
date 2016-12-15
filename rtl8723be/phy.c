@@ -887,7 +887,7 @@ static u8 _rtl8723be_phy_get_ratesection_intxpower_byrate(enum radio_path path,
 		break;
 
 	default:
-		WARN_ONCE(true, "Rate_Section is Illegal\n");
+		WARN_ONCE(true, "rtl8723be: Rate_Section is Illegal\n");
 		break;
 	}
 
@@ -952,7 +952,7 @@ static u8 _rtl8723be_get_txpower_by_rate(struct ieee80211_hw *hw,
 		shift = 24;
 		break;
 	default:
-		WARN_ONCE(true, "Rate_Section is Illegal\n");
+		WARN_ONCE(true, "rtl8723be: Rate_Section is Illegal\n");
 		break;
 	}
 	tx_pwr_diff = (u8)(rtlphy->tx_power_by_rate_offset[band][rfpath][tx_num]
@@ -1336,7 +1336,7 @@ u8 rtl8723be_phy_sw_chnl(struct ieee80211_hw *hw)
 	if (rtlphy->set_bwmode_inprogress)
 		return 0;
 	WARN_ONCE((rtlphy->current_channel > 14),
-		  "WIRELESS_MODE_G but channel>14");
+		  "rtl8723be: WIRELESS_MODE_G but channel>14");
 	rtlphy->sw_chnl_inprogress = true;
 	rtlphy->sw_chnl_stage = 0;
 	rtlphy->sw_chnl_step = 0;
@@ -1387,7 +1387,7 @@ static bool _rtl8723be_phy_sw_chnl_step_by_step(struct ieee80211_hw *hw,
 	rfdependcmdcnt = 0;
 
 	WARN_ONCE((channel < 1 || channel > 14),
-		  "illegal channel for Zebra: %d\n", channel);
+		  "rtl8723be: illegal channel for Zebra: %d\n", channel);
 
 	rtl8723_phy_set_sw_chnl_cmdarray(rfdependcmd, rfdependcmdcnt++,
 					 MAX_RFDEPENDCMD_CNT,

@@ -908,7 +908,8 @@ void rtl8821ae_set_desc(struct ieee80211_hw *hw, u8 *pdesc,
 			break;
 		default:
 			WARN_ONCE(true,
-				  "ERR txdesc :%d not process\n", desc_name);
+				  "rtl8821ae: ERR txdesc :%d not processed\n",
+				  desc_name);
 			break;
 		}
 	} else {
@@ -927,7 +928,8 @@ void rtl8821ae_set_desc(struct ieee80211_hw *hw, u8 *pdesc,
 			break;
 		default:
 			WARN_ONCE(true,
-				  "ERR rxdesc :%d not process\n", desc_name);
+				  "rtl8821ae: ERR rxdesc :%d not processed\n",
+				  desc_name);
 			break;
 		}
 	}
@@ -947,7 +949,8 @@ u32 rtl8821ae_get_desc(u8 *pdesc, bool istx, u8 desc_name)
 			break;
 		default:
 			WARN_ONCE(true,
-				  "ERR txdesc :%d not process\n", desc_name);
+				  "rtl8821ae: ERR txdesc :%d not processed\n",
+				  desc_name);
 			break;
 		}
 	} else {
@@ -963,7 +966,8 @@ u32 rtl8821ae_get_desc(u8 *pdesc, bool istx, u8 desc_name)
 			break;
 		default:
 			WARN_ONCE(true,
-				  "ERR rxdesc :%d not process\n", desc_name);
+				  "rtl8821ae: ERR rxdesc :%d not processed\n",
+				  desc_name);
 			break;
 		}
 	}

@@ -1176,7 +1176,7 @@ static u8 _rtl92ee_phy_get_ratesection_intxpower_byrate(enum radio_path path,
 		rate_section = 7;
 		break;
 	default:
-		WARN_ONCE(true, "Rate_Section is Illegal\n");
+		WARN_ONCE(true, "rtl8192ee: Rate_Section is Illegal\n");
 		break;
 	}
 	return rate_section;
@@ -1239,7 +1239,7 @@ static u8 _rtl92ee_get_txpower_by_rate(struct ieee80211_hw *hw,
 		shift = 24;
 		break;
 	default:
-		WARN_ONCE(true, "Rate_Section is Illegal\n");
+		WARN_ONCE(true, "rtl8192ee: Rate_Section is Illegal\n");
 		break;
 	}
 
@@ -1812,7 +1812,7 @@ u8 rtl92ee_phy_sw_chnl(struct ieee80211_hw *hw)
 	if (rtlphy->set_bwmode_inprogress)
 		return 0;
 	WARN_ONCE((rtlphy->current_channel > 14),
-		  "WIRELESS_MODE_G but channel>14");
+		  "rtl8192ee: WIRELESS_MODE_G but channel>14");
 	rtlphy->sw_chnl_inprogress = true;
 	rtlphy->sw_chnl_stage = 0;
 	rtlphy->sw_chnl_step = 0;
@@ -1861,7 +1861,7 @@ static bool _rtl92ee_phy_sw_chnl_step_by_step(struct ieee80211_hw *hw,
 	rfdependcmdcnt = 0;
 
 	WARN_ONCE((channel < 1 || channel > 14),
-		  "illegal channel for Zebra: %d\n", channel);
+		  "rtl8192ee: illegal channel for Zebra: %d\n", channel);
 
 	_rtl92ee_phy_set_sw_chnl_cmdarray(rfdependcmd, rfdependcmdcnt++,
 					  MAX_RFDEPENDCMD_CNT,
@@ -1948,7 +1948,7 @@ static bool _rtl92ee_phy_set_sw_chnl_cmdarray(struct swchnlcmd *cmdtable,
 	struct swchnlcmd *pcmd;
 
 	if (cmdtable == NULL) {
-		WARN_ONCE(true, "cmdtable cannot be NULL.\n");
+		WARN_ONCE(true, "rtl8192ee: cmdtable cannot be NULL.\n");
 		return false;
 	}
 

@@ -2275,7 +2275,7 @@ int rtl_pci_probe(struct pci_dev *pdev,
 #if (DMA_IS_64BIT == 1)
 	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(64))) {
 		if (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(64))) {
-			RT_ASSERT(false, "Unable to obtain 64bit DMA for consistent allocations\n");
+			WARN_ONCE(true, "rtlwifi: Unable to obtain 64bit DMA for consistent allocations\n");
 			err = -ENOMEM;
 			goto fail1;
 		}
@@ -2336,7 +2336,7 @@ int rtl_pci_probe(struct pci_dev *pdev,
 	/* MEM map */
 	err = pci_request_regions(pdev, KBUILD_MODNAME);
 	if (err) {
-		WARN_ONCE(true, "Can't obtain PCI resources\n");
+		WARN_ONCE(true, "rtlwifi: Can't obtain PCI resources\n");
 		goto fail1;
 	}
 
@@ -2349,7 +2349,7 @@ int rtl_pci_probe(struct pci_dev *pdev,
 			(unsigned long)pci_iomap(pdev,
 			rtlpriv->cfg->bar_id, pmem_len);
 	if (rtlpriv->io.pci_mem_start == 0) {
-		WARN_ONCE(true, "Can't map PCI mem\n");
+		WARN_ONCE(true, "rtlwifi: Can't map PCI mem\n");
 		err = -ENOMEM;
 		goto fail2;
 	}

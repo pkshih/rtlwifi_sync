@@ -454,7 +454,7 @@ void rtl8821ae_fill_h2c_cmd(struct ieee80211_hw *hw,
 
 	if (!rtlhal->fw_ready) {
 		WARN_ONCE(true,
-			  "return H2C cmd because of Fw download fail!!!\n");
+			  "rtl8821ae: error H2C cmd because of Fw download fail!!!\n");
 		return;
 	}
 

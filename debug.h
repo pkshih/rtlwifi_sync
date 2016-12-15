@@ -169,7 +169,6 @@ enum dbgp_flag_e {
 };
 
 #ifdef CONFIG_RTLWIFI_DEBUG
-
 struct rtl_priv;
 
 __printf(5, 6)
@@ -208,11 +207,6 @@ do {									\
 #else
 
 struct rtl_priv;
-
-__printf(2, 3)
-static inline void RT_ASSERT(int exp, const char *fmt, ...)
-{
-}
 
 __printf(4, 5)
 static inline void RT_TRACE(struct rtl_priv *rtlpriv,
