@@ -98,6 +98,13 @@ static int _rtl_phydm_init_com_info(struct rtl_priv *rtlpriv,
 	odm_cmn_info_init(dm, ODM_CMNINFO_BOARD_TYPE, odm_board_type);
 	/* 1 ============== End of BoardType ============== */
 
+#if 0
+	odm_cmn_info_init(dm, ODM_CMNINFO_DOMAIN_CODE_2G,
+			  pHalData->Regulation2_4G);
+	odm_cmn_info_init(dm, ODM_CMNINFO_DOMAIN_CODE_5G,
+			  pHalData->Regulation5G);
+#endif
+
 #ifdef CONFIG_DFS_MASTER
 	odm_cmn_info_init(dm, ODM_CMNINFO_DFS_REGION_DOMAIN,
 			  adapter->registrypriv.dfs_region_domain);
@@ -147,6 +154,10 @@ static int _rtl_phydm_init_com_info(struct rtl_priv *rtlpriv,
 			  &rtlpriv->stats.txbytesunicast);
 	odm_cmn_info_hook(dm, ODM_CMNINFO_RX_UNI,
 			  &rtlpriv->stats.rxbytesunicast);
+#if 0
+	odm_cmn_info_hook(dm, ODM_CMNINFO_WM_MODE,
+			  &pmlmeext->cur_wireless_mode);
+#endif
 	odm_cmn_info_hook(dm, ODM_CMNINFO_BAND, &rtlhal->current_bandtype);
 	odm_cmn_info_hook(dm, ODM_CMNINFO_FORCED_RATE,
 			  &rtlpriv->phydm.forced_data_rate);
@@ -155,8 +166,15 @@ static int _rtl_phydm_init_com_info(struct rtl_priv *rtlpriv,
 
 	odm_cmn_info_hook(dm, ODM_CMNINFO_SEC_CHNL_OFFSET,
 			  &mac->cur_40_prime_sc);
+#if 0
+	odm_cmn_info_hook(dm, ODM_CMNINFO_SEC_MODE,
+			  &adapter->securitypriv.dot11PrivacyAlgrthm);
+#endif
 	odm_cmn_info_hook(dm, ODM_CMNINFO_BW, &rtlphy->current_chan_bw);
 	odm_cmn_info_hook(dm, ODM_CMNINFO_CHNL, &rtlphy->current_channel);
+#if 0
+	odm_cmn_info_hook(dm, ODM_CMNINFO_NET_CLOSED, &adapter->net_closed);
+#endif
 
 	odm_cmn_info_hook(dm, ODM_CMNINFO_SCAN, &mac->act_scanning);
 	odm_cmn_info_hook(dm, ODM_CMNINFO_POWER_SAVING,
