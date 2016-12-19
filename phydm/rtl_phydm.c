@@ -569,6 +569,9 @@ static bool rtl_phydm_query_phy_status(struct rtl_priv *rtlpriv, u8 *phystrpt,
 {
 	/* NOTE: phystrpt may be NULL, and need to fill default value */
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0))
+	#define ether_addr_equal(a, b)	compare_ether_addr(a, b)
+#endif
 	struct phy_dm_struct *dm = rtlpriv_to_phydm(rtlpriv);
 	struct rtl_efuse *rtlefuse = rtl_efuse(rtlpriv);
 	struct rtl_mac *mac = rtl_mac(rtlpriv);
