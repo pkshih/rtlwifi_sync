@@ -25,6 +25,13 @@
 #ifndef __RTL_PHYDM_H__
 #define __RTL_PHYDM_H__
 
+/* for uncooked phydm */
+#ifdef PHYDM_TESTCHIP_SUPPORT	/* borrow to check uncooked code */
+#define phy_dm_struct	PHY_DM_STRUCT
+#define dm_per_pkt_info	_odm_per_pkt_info_
+#define dm_phy_status_info	_odm_phy_status_info_
+#endif
+
 struct rtl_phydm_ops *rtl_phydm_get_ops_pointer(void);
 
 #define rtlpriv_to_phydm(priv)                                                 \

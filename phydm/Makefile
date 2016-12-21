@@ -5,7 +5,25 @@ ccflags-y += -DDM_ODM_SUPPORT_TYPE=0x04
 ccflags-y += -DDBG=1
 ccflags-y += -DMP_DRIVER=0
 ccflags-y += -DDISABLE_BB_RF=0
+# support list
+ccflags-y += -DRTL8881A_SUPPORT=0
+ccflags-y += -DRTL8188E_SUPPORT=0
+ccflags-y += -DRTL8812A_SUPPORT=0
+ccflags-y += -DRTL8821A_SUPPORT=0
+ccflags-y += -DRTL8723B_SUPPORT=0
+ccflags-y += -DRTL8723D_SUPPORT=0
+ccflags-y += -DRTL8192E_SUPPORT=0
+ccflags-y += -DRTL8814A_SUPPORT=0
+ccflags-y += -DRTL8195A_SUPPORT=0
+ccflags-y += -DRTL8197F_SUPPORT=0
+ccflags-y += -DRTL8703B_SUPPORT=0
+ccflags-y += -DRTL8188F_SUPPORT=0
 ccflags-y += -DRTL8822B_SUPPORT=1
+ccflags-y += -DRTL8821B_SUPPORT=0
+ccflags-y += -DRTL8821C_SUPPORT=0
+# bt
+ccflags-y += -DCONFIG_BT_COEXIST=1
+ccflags-y += -DBT_SUPPORT=1
 
 phydm_mod-objs := \
 		phydm_debug.o	\
