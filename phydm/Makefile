@@ -47,6 +47,14 @@ phydm_mod-objs := \
 		phydm_kfree.o\
 		phydm_ccx.o
 
+# Unused
+#phydm_mod-objs +\
+		phydm_beamforming.o\
+		phydm_antdect.o\
+		phydm_pathdiv.o\
+		phydm_dynamic_rx_path.o\
+		phydm_dfs.o\
+
 #phydm_mod-objs += \
 		txbf/halcomtxbf.o\
 		txbf/haltxbfinterface.o\
