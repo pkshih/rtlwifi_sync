@@ -306,7 +306,10 @@ halmac_dump_efuse_drv_88xx(struct halmac_adapter *halmac_adapter)
 		return HALMAC_RET_EFUSE_R_FAIL;
 	}
 
-	mutex_lock_interruptible(&halmac_adapter->efuse_mutex);
+	if (mutex_lock_interruptible(&halmac_adapter->efuse_mutex)) {
+		kfree(efuse_map);
+		return HALMAC_RET_BUSY_STATE;
+	}
 	memcpy(halmac_adapter->hal_efuse_map, efuse_map, efuse_size);
 	halmac_adapter->hal_efuse_map_valid = true;
 	mutex_unlock(&halmac_adapter->efuse_mutex);
@@ -372,7 +375,8 @@ halmac_func_write_efuse_88xx(struct halmac_adapter *halmac_adapter, u32 offset,
 	driver_adapter = halmac_adapter->driver_adapter;
 	halmac_api = (struct halmac_api *)halmac_adapter->halmac_api;
 
-	mutex_lock_interruptible(&halmac_adapter->efuse_mutex);
+	if (mutex_lock_interruptible(&halmac_adapter->efuse_mutex))
+		return HALMAC_RET_BUSY_STATE;
 	halmac_adapter->hal_efuse_map_valid = false;
 	mutex_unlock(&halmac_adapter->efuse_mutex);
 
@@ -598,7 +602,10 @@ halmac_read_logical_efuse_map_88xx(struct halmac_adapter *halmac_adapter,
 			}
 		}
 
-		mutex_lock_interruptible(&halmac_adapter->efuse_mutex);
+		if (mutex_lock_interruptible(&halmac_adapter->efuse_mutex)) {
+			kfree(efuse_map);
+			return HALMAC_RET_BUSY_STATE;
+		}
 		memcpy(halmac_adapter->hal_efuse_map, efuse_map, efuse_size);
 		halmac_adapter->hal_efuse_map_valid = true;
 		mutex_unlock(&halmac_adapter->efuse_mutex);
@@ -1676,7 +1683,8 @@ halmac_set_h2c_header_88xx(struct halmac_adapter *halmac_adapter,
 	H2C_CMD_HEADER_SET_CATEGORY(hal_h2c_hdr, 0x00);
 	H2C_CMD_HEADER_SET_TOTAL_LEN(hal_h2c_hdr, 16);
 
-	mutex_lock_interruptible(&halmac_adapter->h2c_seq_mutex);
+	if (mutex_lock_interruptible(&halmac_adapter->h2c_seq_mutex))
+		return HALMAC_RET_BUSY_STATE;
 	H2C_CMD_HEADER_SET_SEQ_NUM(hal_h2c_hdr, halmac_adapter->h2c_packet_seq);
 	*seq = halmac_adapter->h2c_packet_seq;
 	halmac_adapter->h2c_packet_seq++;
@@ -1704,7 +1712,8 @@ enum halmac_ret_status halmac_set_fw_offload_h2c_header_88xx(
 	FW_OFFLOAD_H2C_SET_CATEGORY(hal_h2c_hdr, 0x01);
 	FW_OFFLOAD_H2C_SET_CMD_ID(hal_h2c_hdr, 0xFF);
 
-	mutex_lock_interruptible(&halmac_adapter->h2c_seq_mutex);
+	if (mutex_lock_interruptible(&halmac_adapter->h2c_seq_mutex))
+		return HALMAC_RET_BUSY_STATE;
 	FW_OFFLOAD_H2C_SET_SEQ_NUM(hal_h2c_hdr, halmac_adapter->h2c_packet_seq);
 	*seq_num = halmac_adapter->h2c_packet_seq;
 	halmac_adapter->h2c_packet_seq++;
@@ -2712,7 +2721,10 @@ halmac_parse_efuse_data_88xx(struct halmac_adapter *halmac_adapter, u8 *c2h_buf,
 	}
 	memset(eeprom_map, 0xFF, eeprom_size);
 
-	mutex_lock_interruptible(&halmac_adapter->efuse_mutex);
+	if (mutex_lock_interruptible(&halmac_adapter->efuse_mutex)) {
+		kfree(eeprom_map);
+		return HALMAC_RET_BUSY_STATE;
+	}
 	memcpy(halmac_adapter->hal_efuse_map +
 		       segment_id * halmac_adapter->efuse_segment_size,
 	       c2h_buf + HALMAC_C2H_DATA_OFFSET_88XX, segment_size);
@@ -2732,7 +2744,10 @@ halmac_parse_efuse_data_88xx(struct halmac_adapter *halmac_adapter, u8 *c2h_buf,
 		halmac_adapter->halmac_state.efuse_state_set.process_status =
 			process_status;
 
-		mutex_lock_interruptible(&halmac_adapter->efuse_mutex);
+		if (mutex_lock_interruptible(&halmac_adapter->efuse_mutex)) {
+			kfree(eeprom_map);
+			return HALMAC_RET_BUSY_STATE;
+		}
 		halmac_adapter->hal_efuse_map_valid = true;
 		mutex_unlock(&halmac_adapter->efuse_mutex);
 
