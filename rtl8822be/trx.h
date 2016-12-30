@@ -26,6 +26,7 @@
 #ifndef __RTL8822B_TRX_H__
 #define __RTL8822B_TRX_H__
 
+#include "../halmac/halmac_hw_cfg.h"
 #include "../halmac/halmac_tx_desc_nic.h"
 #include "../halmac/halmac_rx_desc_nic.h"
 
