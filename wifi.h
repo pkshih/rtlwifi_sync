@@ -2258,6 +2258,8 @@ struct rtl_intf_ops {
 };
 
 struct rtl_mod_params {
+	/* default: 0,0 */
+	u64 debug_mask;
 	/* default: 0 = using hardware encryption */
 	bool sw_crypto;
 
@@ -2388,7 +2390,7 @@ struct rtl_works {
 struct rtl_debug {
 	u32 dbgp_type[DBGP_TYPE_MAX];
 	int global_debuglevel;
-	u64 global_debugcomponents;
+	u64 global_debug_mask;
 
 	/* add for debug */
 	struct dentry *debugfs_dir;
