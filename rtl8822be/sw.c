@@ -313,8 +313,8 @@ static struct rtl_mod_params rtl8822be_mod_params = {
 	.swctrl_lps = false,
 	.fwctrl_lps = true,
 	.msi_support = true,
-	.debug = DBG_EMERG,
-	.debug_mask = 0,
+	.debug = 3,//DBG_EMERG,
+	.debug_mask = 0xffffffffffffffffULL,
 };
 
 static struct rtl_hal_cfg rtl8822be_hal_cfg = {
