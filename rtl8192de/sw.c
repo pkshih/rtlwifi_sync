@@ -373,7 +373,9 @@ module_param_named(debug, rtl92de_mod_params.debug, int, 0444);
 module_param_named(ips, rtl92de_mod_params.inactiveps, bool, 0444);
 module_param_named(swlps, rtl92de_mod_params.swctrl_lps, bool, 0444);
 module_param_named(fwlps, rtl92de_mod_params.fwctrl_lps, bool, 0444);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0))
 module_param_named(debug_mask, rtl92de_mod_params.debug_mask, ullong, 0444);
+#endif
 MODULE_PARM_DESC(swenc, "Set to 1 for software crypto (default 0)\n");
 MODULE_PARM_DESC(ips, "Set to 0 to not use link power save (default 1)\n");
 MODULE_PARM_DESC(swlps, "Set to 1 to use SW control power save (default 1)\n");

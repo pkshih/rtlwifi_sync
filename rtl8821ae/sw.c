@@ -447,7 +447,9 @@ MODULE_FIRMWARE("rtlwifi/rtl8821aefw.bin");
 
 module_param_named(swenc, rtl8821ae_mod_params.sw_crypto, bool, 0444);
 module_param_named(debug, rtl8821ae_mod_params.debug, int, 0444);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0))
 module_param_named(debug_mask, rtl8821ae_mod_params.debug_mask, ullong, 0444);
+#endif
 module_param_named(ips, rtl8821ae_mod_params.inactiveps, bool, 0444);
 module_param_named(swlps, rtl8821ae_mod_params.swctrl_lps, bool, 0444);
 module_param_named(fwlps, rtl8821ae_mod_params.fwctrl_lps, bool, 0444);
