@@ -27,6 +27,9 @@
 #include "../pci.h"
 #include "../ps.h"
 #include "../base.h"
+/* for uncooked code, it will avoid redefinition */
+#undef SET_TX_DESC_SPE_RPT
+#undef SET_TX_DESC_SW_DEFINE
 #include "reg.h"
 #include "def.h"
 #include "phy.h"

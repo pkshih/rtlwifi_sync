@@ -26,6 +26,9 @@
 #include "../wifi.h"
 #include "../pci.h"
 #include "../base.h"
+/* for uncooked code, it will avoid redefinition */
+#undef SET_TX_DESC_SPE_RPT
+#undef SET_TX_DESC_SW_DEFINE
 #include "../stats.h"
 #include "reg.h"
 #include "def.h"
