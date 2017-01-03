@@ -166,7 +166,9 @@ static struct rtl_mod_params rtl92cu_mod_params = {
 
 module_param_named(swenc, rtl92cu_mod_params.sw_crypto, bool, 0444);
 module_param_named(debug, rtl92cu_mod_params.debug, int, 0444);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 17, 0))
 module_param_named(debug_mask, rtl92cu_mod_params.debug_mask, ullong, 0444);
+#endif
 MODULE_PARM_DESC(swenc, "Set to 1 for software crypto (default 0)\n");
 MODULE_PARM_DESC(debug, "Set debug level (0-5) (default 0)");
 MODULE_PARM_DESC(debug_mask, "Set debug mask (default 0)");
