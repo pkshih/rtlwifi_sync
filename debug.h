@@ -191,7 +191,7 @@ void _rtl_dbg_print_data(struct rtl_priv *rtlpriv, u64 comp, int level,
 
 #define RT_TRACE_STRING(rtlpriv, comp, level, string)			\
 do {									\
-	if (unlikely(((comp) & rtlpriv->dbg.global_debugcomponents) &&	\
+	if (unlikely(((comp) & rtlpriv->dbg.global_debug_mask) &&	\
 		     ((level) <= rtlpriv->dbg.global_debuglevel))) {	\
 		printk(KBUILD_MODNAME ":%s():<%lx> %s",			\
 		       __func__, in_interrupt(), string);		\
