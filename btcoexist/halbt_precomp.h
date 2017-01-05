@@ -37,6 +37,12 @@
 
 #include "halbtcoutsrc.h"
 
+/* for uncooked code */
+#define boolean bool
+#define BOOLEAN	bool
+#define IN
+#define OUT
+
 /* Interface type */
 #define RT_PCI_INTERFACE	1
 #define RT_USB_INTERFACE	2

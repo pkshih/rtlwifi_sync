@@ -94,6 +94,13 @@ ccflags-y += -D_ieee80211_is_robust_mgmt_frame=ieee80211_is_robust_mgmt_frame
 subdir-ccflags-y += -D_ieee80211_is_robust_mgmt_frame=ieee80211_is_robust_mgmt_frame
 endif
 
+# for uncooked code
+uncooked_ccflags-y += -DBT_SUPPORT=1
+uncooked_ccflags-y += -DCOEX_SUPPORT=1
+uncooked_ccflags-y += -DRTL8822B_SUPPORT=1
+ccflags-y += $(uncooked_ccflags-y)
+subdir-ccflags-y += $(uncooked_ccflags-y)
+
 all: 
 	$(MAKE) -C $(KSRC) M=$(PWD) modules
 install: all
