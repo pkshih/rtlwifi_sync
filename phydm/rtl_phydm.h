@@ -30,6 +30,8 @@
 #define phy_dm_struct	PHY_DM_STRUCT
 #define dm_per_pkt_info	_odm_per_pkt_info_
 #define dm_phy_status_info	_odm_phy_status_info_
+#define odm_ic_type	odm_ic_type_e
+#define odm_rf_radio_path	odm_rf_radio_path_e
 #endif
 
 struct rtl_phydm_ops *rtl_phydm_get_ops_pointer(void);
