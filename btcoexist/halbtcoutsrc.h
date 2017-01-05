@@ -29,6 +29,9 @@
 
 #define		BTC_COEX_OFFLOAD			0
 
+/* for uncooked code */
+extern u8 gl_btc_trace_buf[];
+
 #ifdef CONFIG_RTLWIFI_DEBUG
 
 #define BTC_SPRINTF(ptr, ...)	snprintf(ptr, ##__VA_ARGS__)

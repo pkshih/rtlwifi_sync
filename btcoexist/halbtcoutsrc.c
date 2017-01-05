@@ -31,6 +31,7 @@
 
 struct btc_coexist gl_bt_coexist;
 static u8 gl_btc_dbg_buf[BT_TMP_BUF_SIZE];
+u8 gl_btc_trace_buf[BT_TMP_BUF_SIZE];
 
 /***************************************************
  *		Debug related function
