@@ -572,6 +572,22 @@ void rtl8822be_set_hw_reg(struct ieee80211_hw *hw, u8 variable, u8 *val)
 		rtl8822be_phy_set_io_cmd(hw, (*(enum io_type *)val));
 		break;
 	case HW_VAR_SET_RPWM:
+#if 0
+		{
+		u8 rpwm_val;
+
+		rpwm_val = rtl_read_byte(rtlpriv, REG_PCIE_HRPWM_8822B);
+		udelay(1);
+
+		if (rpwm_val & BIT(7)) {
+			rtl_write_byte(rtlpriv, REG_PCIE_HRPWM_8822B,
+				       (*(u8 *)val));
+		} else {
+			rtl_write_byte(rtlpriv, REG_PCIE_HRPWM_8822B,
+				       ((*(u8 *) val) | BIT(7)));
+		}
+		}
+#endif
 		break;
 	case HW_VAR_H2C_FW_PWRMODE:
 		rtl8822be_set_fw_pwrmode_cmd(hw, (*(u8 *)val));
