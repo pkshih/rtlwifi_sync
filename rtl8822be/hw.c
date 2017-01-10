@@ -2108,6 +2108,7 @@ void rtl8822be_read_eeprom_info_dummy(struct ieee80211_hw *hw)
 	 */
 }
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 static u32 _rtl8822be_rate_to_bitmap_2ssvht(__le16 vht_rate)
 {
 	u8 i, j, tmp_rate;
@@ -2136,6 +2137,7 @@ static u32 _rtl8822be_rate_to_bitmap_2ssvht(__le16 vht_rate)
 
 	return rate_bitmap;
 }
+#endif
 
 static u8 _rtl8822be_get_vht_en(enum wireless_mode wirelessmode,
 				u32 ratr_bitmap)
@@ -2199,8 +2201,10 @@ static bool _rtl8822be_get_ra_shortgi(struct ieee80211_hw *hw,
 		(sta->ht_cap.cap & IEEE80211_HT_CAP_SGI_20) ? 1 : 0;
 	u8 b_curshortgi_80mhz = 0;
 
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 	b_curshortgi_80mhz =
 		(sta->vht_cap.cap & IEEE80211_VHT_CAP_SHORT_GI_80) ? 1 : 0;
+#endif
 
 	if (mac_id == 99 /*MAC_ID_STATIC_FOR_BROADCAST_MULTICAST*/)
 		b_short_gi = false;
@@ -2254,12 +2258,14 @@ static void rtl8822be_update_hal_rate_mask(struct ieee80211_hw *hw,
 	    wirelessmode == WIRELESS_MODE_N_5G)
 		ratr_bitmap |= (sta->ht_cap.mcs.rx_mask[1] << 20 |
 				sta->ht_cap.mcs.rx_mask[0] << 12);
+#if (LINUX_VERSION_CODE >= KERNEL_VERSION(3, 8, 0))
 	else if (wirelessmode == WIRELESS_MODE_AC_24G ||
 		 wirelessmode == WIRELESS_MODE_AC_5G ||
 		 wirelessmode == WIRELESS_MODE_AC_ONLY)
 		ratr_bitmap |= _rtl8822be_rate_to_bitmap_2ssvht(
 				       sta->vht_cap.vht_mcs.rx_mcs_map)
 			       << 12;
+#endif
 
 	b_shortgi = _rtl8822be_get_ra_shortgi(hw, sta, macid);
 	rf_type = _rtl8822be_get_ra_rftype(hw, wirelessmode, ratr_bitmap);
