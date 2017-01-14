@@ -195,6 +195,7 @@ int rtl8723be_init_sw_vars(struct ieee80211_hw *hw)
 		err = request_firmware_nowait(THIS_MODULE, 1, fw_name,
 					      rtlpriv->io.dev, GFP_KERNEL, hw,
 					      rtl_fw_cb);
+	}
 	if (err) {
 		pr_err("Failed to request firmware!\n");
 		return 1;
