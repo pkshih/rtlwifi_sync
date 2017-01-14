@@ -30,7 +30,6 @@
  ***********************************************/
 
 struct btc_coexist gl_bt_coexist;
-static u8 gl_btc_dbg_buf[BT_TMP_BUF_SIZE];
 
 /***************************************************
  *		Debug related function
@@ -63,40 +62,6 @@ static bool halbtc_is_wifi_busy(struct rtl_priv *rtlpriv)
 		return true;
 	else
 		return false;
-}
-
-static void halbtc_dbg_init(void)
-{
-}
-
-void halbtc_dbg_info_init(struct btc_coexist *btcoexist, u8 *buf, u32 size)
-{
-	struct btcoex_dbg_info *btcoex_dbg_info = &btcoexist->dbg_info;
-
-	memset(btcoex_dbg_info, 0, sizeof(struct btcoex_dbg_info));
-
-	if (buf && size) {
-		btcoex_dbg_info->info = buf;
-		btcoex_dbg_info->size = size;
-	}
-}
-
-void halbtc_dbg_info_print(struct btc_coexist *btcoexist, u8 *dbgmsg)
-{
-	struct btcoex_dbg_info *btcoex_dbg_info = &btcoexist->dbg_info;
-	u32 msglen;
-	u8 *pbuf;
-
-	if (!btcoex_dbg_info->info)
-		return;
-
-	msglen = strlen(dbgmsg);
-	if (btcoex_dbg_info->len + msglen > btcoex_dbg_info->size)
-		return;
-
-	pbuf = btcoex_dbg_info->info + btcoex_dbg_info->len;
-	memcpy(pbuf, dbgmsg, msglen);
-	btcoex_dbg_info->len += msglen;
 }
 
 /***************************************************
@@ -703,7 +668,6 @@ static
 void halbtc_display_wifi_status(struct btc_coexist *btcoexist)
 {
 	struct rtl_priv *rtlpriv = btcoexist->adapter;
-	u8	*cli_buf = btcoexist->cli_buf;
 	s32	wifi_rssi = 0, bt_hs_rssi = 0;
 	bool	scan = false, link = false, roam = false, wifi_busy = false,
 		wifi_under_b_mode = false,
@@ -718,37 +682,33 @@ void halbtc_display_wifi_status(struct btc_coexist *btcoexist)
 	u8	ap_num = 0;
 
 	wifi_link_status = halbtc_get_wifi_link_status(btcoexist);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d/ %d/ %d/ %d",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %d/ %d/ %d/ %d/ %d",
 		   "STA/vWifi/HS/p2pGo/p2pGc",
 		   ((wifi_link_status & WIFI_STA_CONNECTED) ? 1 : 0),
 		   ((wifi_link_status & WIFI_AP_CONNECTED) ? 1 : 0),
 		   ((wifi_link_status & WIFI_HS_CONNECTED) ? 1 : 0),
 		   ((wifi_link_status & WIFI_P2P_GO_CONNECTED) ? 1 : 0),
 		   ((wifi_link_status & WIFI_P2P_GC_CONNECTED) ? 1 : 0));
-	CL_PRINTF(cli_buf);
 
 	btcoexist->btc_get(btcoexist, BTC_GET_BL_HS_OPERATION, &bt_hs_on);
 	btcoexist->btc_get(btcoexist, BTC_GET_U1_WIFI_DOT11_CHNL, &wifi_chnl);
 	btcoexist->btc_get(btcoexist, BTC_GET_U1_WIFI_HS_CHNL, &wifi_hs_chnl);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d / %d(%d)",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %d / %d(%d)",
 		   "Dot11 channel / HsChnl(High Speed)",
 		   wifi_chnl, wifi_hs_chnl, bt_hs_on);
-	CL_PRINTF(cli_buf);
 
 	btcoexist->btc_get(btcoexist, BTC_GET_S4_WIFI_RSSI, &wifi_rssi);
 	btcoexist->btc_get(btcoexist, BTC_GET_S4_HS_RSSI, &bt_hs_rssi);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %d/ %d",
 		   "Wifi rssi/ HS rssi",
 		   wifi_rssi - 100, bt_hs_rssi - 100);
-	CL_PRINTF(cli_buf);
 
 	btcoexist->btc_get(btcoexist, BTC_GET_BL_WIFI_SCAN, &scan);
 	btcoexist->btc_get(btcoexist, BTC_GET_BL_WIFI_LINK, &link);
 	btcoexist->btc_get(btcoexist, BTC_GET_BL_WIFI_ROAM, &roam);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d/ %d ",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %d/ %d/ %d ",
 		   "Wifi link/ roam/ scan",
 		   link, roam, scan);
-	CL_PRINTF(cli_buf);
 
 	btcoexist->btc_get(btcoexist, BTC_GET_BL_WIFI_UNDER_5G, &wifi_under_5g);
 	btcoexist->btc_get(btcoexist, BTC_GET_U4_WIFI_BW, &wifi_bw);
@@ -760,7 +720,7 @@ void halbtc_display_wifi_status(struct btc_coexist *btcoexist)
 	btcoexist->btc_get(btcoexist, BTC_GET_BL_WIFI_UNDER_B_MODE,
 			   &wifi_under_b_mode);
 
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %s / %s/ %s/ AP=%d ",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %s / %s/ %s/ AP=%d ",
 		   "Wifi freq/ bw/ traffic",
 		   gl_btc_wifi_freq_string[wifi_freq],
 		   ((wifi_under_b_mode) ? "11b" :
@@ -769,22 +729,20 @@ void halbtc_display_wifi_status(struct btc_coexist *btcoexist)
 					      wifi_traffic_dir) ? "uplink" :
 					     "downlink")),
 		   ap_num);
-	CL_PRINTF(cli_buf);
 
 	/* power status	 */
 	dc_mode = true;	/*TODO*/
 	under_ips = rtlpriv->psc.inactive_pwrstate == ERFOFF ? 1 : 0;
 	under_lps = rtlpriv->psc.dot11_psmode == EACTIVE ? 0 : 1;
 	fw_ps_state = low_power = 0; /*TODO*/
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %s%s%s%s",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %s%s%s%s",
 		   "Power Status",
 		   (dc_mode ? "DC mode" : "AC mode"),
 		   (under_ips ? ", IPS ON" : ""),
 		   (under_lps ? ", LPS ON" : ""),
 		   (low_power ? ", 32k" : ""));
-	CL_PRINTF(cli_buf);
 
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE,
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 		   "\r\n %-35s = %02x %02x %02x %02x %02x %02x (0x%x/0x%x)",
 		   "Power mode cmd(lps/rpwm)",
 		   btcoexist->pwr_mode_val[0], btcoexist->pwr_mode_val[1],
@@ -792,7 +750,6 @@ void halbtc_display_wifi_status(struct btc_coexist *btcoexist)
 		   btcoexist->pwr_mode_val[4], btcoexist->pwr_mode_val[5],
 		   btcoexist->bt_info.lps_val,
 		   btcoexist->bt_info.rpwm_val);
-	CL_PRINTF(cli_buf);
 }
 
 /************************************************************
@@ -1020,17 +977,7 @@ bool exhalbtc_initlize_variables(void)
 {
 	struct btc_coexist *btcoexist = &gl_bt_coexist;
 
-	halbtc_dbg_init();
-
-#if DEV_BUS_TYPE == RT_PCI_INTERFACE
 	btcoexist->chip_interface = BTC_INTF_PCI;
-#elif DEV_BUS_TYPE == RT_USB_INTERFACE
-	btcoexist->chip_interface = BTC_INTF_USB;
-#elif DEV_BUS_TYPE == RT_SDIO_INTERFACE
-	btcoexist->chip_interface = BTC_INTF_SDIO;
-#else
-	btcoexist->chip_interface = BTC_INTF_UNKNOWN;
-#endif
 
 	btcoexist->btc_read_1byte = halbtc_read_1byte;
 	btcoexist->btc_write_1byte = halbtc_write_1byte;
@@ -1055,8 +1002,6 @@ bool exhalbtc_initlize_variables(void)
 	btcoexist->btc_get_bt_reg = halbtc_get_bt_reg;
 	btcoexist->btc_set_bt_reg = halbtc_set_bt_reg;
 	btcoexist->btc_set_bt_ant_detection = halbtc_set_bt_ant_detection;
-
-	btcoexist->cli_buf = &gl_btc_dbg_buf[0];
 
 	return true;
 }

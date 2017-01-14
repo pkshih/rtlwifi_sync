@@ -585,7 +585,6 @@ struct btc_coexist {
 	bool initilized;
 	bool stop_coex_dm;
 	bool manual_control;
-	u8 *cli_buf;
 	struct  btcoex_dbg_info dbg_info;
 	struct btc_statistics statistics;
 	u8 pwr_mode_val[10];

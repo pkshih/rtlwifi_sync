@@ -2241,66 +2241,55 @@ void ex_halbtc8821a1ant_init_coex_dm(struct btc_coexist *btcoexist)
 
 void ex_halbtc8821a1ant_display_coex_info(struct btc_coexist *btcoexist)
 {
+	struct rtl_priv *rtlpriv = btcoexist->adapter;
 	struct btc_board_info *board_info = &btcoexist->board_info;
 	struct btc_bt_link_info *bt_link_info = &btcoexist->bt_link_info;
-	u8 *cli_buf = btcoexist->cli_buf;
 	u8 u8tmp[4], i, bt_info_ext, ps_tdma_case = 0;
 	u16 u16tmp[4];
 	u32 u32tmp[4];
 	u32 fw_ver = 0, bt_patch_ver = 0;
 
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE,
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 		   "\r\n ============[BT Coexist info]============");
-	CL_PRINTF(cli_buf);
 
 	if (btcoexist->manual_control) {
-		CL_SPRINTF(
-			cli_buf, BT_TMP_BUF_SIZE,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			"\r\n ============[Under Manual Control]============");
-		CL_PRINTF(cli_buf);
-		CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			   "\r\n ==========================================");
-		CL_PRINTF(cli_buf);
 	}
 	if (btcoexist->stop_coex_dm) {
-		CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			   "\r\n ============[Coex is STOPPED]============");
-		CL_PRINTF(cli_buf);
-		CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			   "\r\n ==========================================");
-		CL_PRINTF(cli_buf);
 	}
 
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d/ %d",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %d/ %d/ %d",
 		   "Ant PG Num/ Ant Mech/ Ant Pos:", board_info->pg_ant_num,
 		   board_info->btdm_ant_num, board_info->btdm_ant_pos);
-	CL_PRINTF(cli_buf);
 
 	btcoexist->btc_get(btcoexist, BTC_GET_U4_BT_PATCH_VER, &bt_patch_ver);
 	btcoexist->btc_get(btcoexist, BTC_GET_U4_WIFI_FW_VER, &fw_ver);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE,
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 		   "\r\n %-35s = %d_%x/ 0x%x/ 0x%x(%d)",
 		   "CoexVer/ FwVer/ PatchVer", glcoex_ver_date_8821a_1ant,
 		   glcoex_ver_8821a_1ant, fw_ver, bt_patch_ver, bt_patch_ver);
-	CL_PRINTF(cli_buf);
 
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %02x %02x %02x ",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %02x %02x %02x ",
 		   "Wifi channel informed to BT", coex_dm->wifi_chnl_info[0],
 		   coex_dm->wifi_chnl_info[1], coex_dm->wifi_chnl_info[2]);
-	CL_PRINTF(cli_buf);
 
 	/* wifi status */
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s",
 		   "============[Wifi Status]============");
-	CL_PRINTF(cli_buf);
 	btcoexist->btc_disp_dbg_msg(btcoexist, BTC_DBG_DISP_WIFI_STATUS);
 
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s",
 		   "============[BT Status]============");
-	CL_PRINTF(cli_buf);
 
-	CL_SPRINTF(
-		cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = [%s/ %d/ %d] ",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
+		 "\r\n %-35s = [%s/ %d/ %d] ",
 		"BT [status/ rssi/ retryCnt]",
 		((coex_sta->bt_disabled) ?
 		 ("disabled") :
@@ -2314,25 +2303,21 @@ void ex_halbtc8821a1ant_display_coex_info(struct btc_coexist *btcoexist)
 		    "connected-idle" :
 		    "busy")))),
 		coex_sta->bt_rssi, coex_sta->bt_retry_cnt);
-	CL_PRINTF(cli_buf);
 
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d / %d / %d / %d",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %d / %d / %d / %d",
 		   "SCO/HID/PAN/A2DP", bt_link_info->sco_exist,
 		   bt_link_info->hid_exist, bt_link_info->pan_exist,
 		   bt_link_info->a2dp_exist);
-	CL_PRINTF(cli_buf);
 	btcoexist->btc_disp_dbg_msg(btcoexist, BTC_DBG_DISP_BT_LINK_INFO);
 
 	bt_info_ext = coex_sta->bt_info_ext;
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %s",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %s",
 		   "BT Info A2DP rate",
 		   (bt_info_ext & BIT(0)) ? "Basic rate" : "EDR rate");
-	CL_PRINTF(cli_buf);
 
 	for (i = 0; i < BT_INFO_SRC_8821A_1ANT_MAX; i++) {
 		if (coex_sta->bt_info_c2h_cnt[i]) {
-			CL_SPRINTF(
-				cli_buf, BT_TMP_BUF_SIZE,
+			RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 				"\r\n %-35s = %02x %02x %02x %02x %02x %02x %02x(%d)",
 				glbt_info_src_8821a_1ant[i],
 				coex_sta->bt_info_c2h[i][0],
@@ -2343,121 +2328,101 @@ void ex_halbtc8821a1ant_display_coex_info(struct btc_coexist *btcoexist)
 				coex_sta->bt_info_c2h[i][5],
 				coex_sta->bt_info_c2h[i][6],
 				coex_sta->bt_info_c2h_cnt[i]);
-			CL_PRINTF(cli_buf);
 		}
 	}
 
 	if (!btcoexist->manual_control) {
-		CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d",
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %d",
 			   "SM[LowPenaltyRA]", coex_dm->cur_low_penalty_ra);
-		CL_PRINTF(cli_buf);
 
-		CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s",
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s",
 			   "============[mechanisms]============");
-		CL_PRINTF(cli_buf);
 
 		ps_tdma_case = coex_dm->cur_ps_tdma;
-		CL_SPRINTF(
-			cli_buf, BT_TMP_BUF_SIZE,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			"\r\n %-35s = %02x %02x %02x %02x %02x case-%d (auto:%d)",
 			"PS TDMA", coex_dm->ps_tdma_para[0],
 			coex_dm->ps_tdma_para[1], coex_dm->ps_tdma_para[2],
 			coex_dm->ps_tdma_para[3], coex_dm->ps_tdma_para[4],
 			ps_tdma_case, coex_dm->auto_tdma_adjust);
-		CL_PRINTF(cli_buf);
 
-		CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d ",
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %d ",
 			   "IgnWlanAct", coex_dm->cur_ignore_wlan_act);
-		CL_PRINTF(cli_buf);
 
-		CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x ",
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = 0x%x ",
 			   "Latest error condition(should be 0)",
 			   coex_dm->error_condition);
-		CL_PRINTF(cli_buf);
 	}
 
 	/* Hw setting		 */
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s",
 		   "============[Hw setting]============");
-	CL_PRINTF(cli_buf);
 
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x/0x%x/0x%x/0x%x",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = 0x%x/0x%x/0x%x/0x%x",
 		   "backup ARFR1/ARFR2/RL/AMaxTime", coex_dm->backup_arfr_cnt1,
 		   coex_dm->backup_arfr_cnt2, coex_dm->backup_retry_limit,
 		   coex_dm->backup_ampdu_max_time);
-	CL_PRINTF(cli_buf);
 
 	u32tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0x430);
 	u32tmp[1] = btcoexist->btc_read_4byte(btcoexist, 0x434);
 	u16tmp[0] = btcoexist->btc_read_2byte(btcoexist, 0x42a);
 	u8tmp[0] = btcoexist->btc_read_1byte(btcoexist, 0x456);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x/0x%x/0x%x/0x%x",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = 0x%x/0x%x/0x%x/0x%x",
 		   "0x430/0x434/0x42a/0x456", u32tmp[0], u32tmp[1], u16tmp[0],
 		   u8tmp[0]);
-	CL_PRINTF(cli_buf);
 
 	u8tmp[0] = btcoexist->btc_read_1byte(btcoexist, 0x778);
 	u32tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0xc58);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x/ 0x%x",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = 0x%x/ 0x%x",
 		   "0x778/ 0xc58[29:25]", u8tmp[0],
 		   (u32tmp[0] & 0x3e000000) >> 25);
-	CL_PRINTF(cli_buf);
 
 	u8tmp[0] = btcoexist->btc_read_1byte(btcoexist, 0x8db);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x", "0x8db[6:5]",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = 0x%x", "0x8db[6:5]",
 		   ((u8tmp[0] & 0x60) >> 5));
-	CL_PRINTF(cli_buf);
 
 	u8tmp[0] = btcoexist->btc_read_1byte(btcoexist, 0x975);
 	u32tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0xcb4);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x/ 0x%x/ 0x%x",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = 0x%x/ 0x%x/ 0x%x",
 		   "0xcb4[29:28]/0xcb4[7:0]/0x974[9:8]",
 		   (u32tmp[0] & 0x30000000) >> 28, u32tmp[0] & 0xff,
 		   u8tmp[0] & 0x3);
-	CL_PRINTF(cli_buf);
 
 	u8tmp[0] = btcoexist->btc_read_1byte(btcoexist, 0x40);
 	u32tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0x4c);
 	u8tmp[1] = btcoexist->btc_read_1byte(btcoexist, 0x64);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x/ 0x%x/ 0x%x",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = 0x%x/ 0x%x/ 0x%x",
 		   "0x40/0x4c[24:23]/0x64[0]", u8tmp[0],
 		   ((u32tmp[0] & 0x01800000) >> 23), u8tmp[1] & 0x1);
-	CL_PRINTF(cli_buf);
 
 	u32tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0x550);
 	u8tmp[0] = btcoexist->btc_read_1byte(btcoexist, 0x522);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x/ 0x%x",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = 0x%x/ 0x%x",
 		   "0x550(bcn ctrl)/0x522", u32tmp[0], u8tmp[0]);
-	CL_PRINTF(cli_buf);
 
 	u32tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0xc50);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x", "0xc50(dig)",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = 0x%x", "0xc50(dig)",
 		   u32tmp[0] & 0xff);
-	CL_PRINTF(cli_buf);
 
 	u32tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0xf48);
 	u8tmp[0] = btcoexist->btc_read_1byte(btcoexist, 0xa5d);
 	u8tmp[1] = btcoexist->btc_read_1byte(btcoexist, 0xa5c);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x/ 0x%x",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = 0x%x/ 0x%x",
 		   "OFDM-FA/ CCK-FA", u32tmp[0], (u8tmp[0] << 8) + u8tmp[1]);
-	CL_PRINTF(cli_buf);
 
 	u32tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0x6c0);
 	u32tmp[1] = btcoexist->btc_read_4byte(btcoexist, 0x6c4);
 	u32tmp[2] = btcoexist->btc_read_4byte(btcoexist, 0x6c8);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = 0x%x/ 0x%x/ 0x%x",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = 0x%x/ 0x%x/ 0x%x",
 		   "0x6c0/0x6c4/0x6c8(coexTable)", u32tmp[0], u32tmp[1],
 		   u32tmp[2]);
-	CL_PRINTF(cli_buf);
 
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %d/ %d",
 		   "0x770(high-pri rx/tx)", coex_sta->high_priority_rx,
 		   coex_sta->high_priority_tx);
-	CL_PRINTF(cli_buf);
-	CL_SPRINTF(cli_buf, BT_TMP_BUF_SIZE, "\r\n %-35s = %d/ %d",
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "\r\n %-35s = %d/ %d",
 		   "0x774(low-pri rx/tx)", coex_sta->low_priority_rx,
 		   coex_sta->low_priority_tx);
-	CL_PRINTF(cli_buf);
 #if (BT_AUTO_REPORT_ONLY_8821A_1ANT == 1)
 	halbtc8821a1ant_monitor_bt_ctr(btcoexist);
 #endif
