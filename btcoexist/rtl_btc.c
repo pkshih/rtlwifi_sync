@@ -201,13 +201,40 @@ void rtl_btc_btmpinfo_notify(struct rtl_priv *rtlpriv, u8 *tmp_buf, u8 length)
 	seq = tmp_buf[2] >> 4;
 
 	/* BT Firmware version response */
-	if (seq == 0x0E) {
+	switch (seq) {
+	case BT_SEQ_GET_BT_VERSION:
 		bt_real_fw_ver = tmp_buf[3] | (tmp_buf[4] << 8);
 		bt_fw_ver = tmp_buf[5];
 
 		gl_bt_coexist.bt_info.bt_real_fw_ver = bt_real_fw_ver;
 		gl_bt_coexist.bt_info.bt_fw_ver = bt_fw_ver;
+		break;
+	case BT_SEQ_GET_BT_COEX_SUPPORTED_FEATURE:
+		gl_bt_coexist.bt_info.bt_supported_feature = tmp_buf[3] |
+							     (tmp_buf[4] << 8);
+		break;
+	case BT_SEQ_GET_BT_COEX_SUPPORTED_VERSION:
+		gl_bt_coexist.bt_info.bt_supported_version = tmp_buf[3] |
+							     (tmp_buf[4] << 8);
+		break;
+	case BT_SEQ_GET_BT_ANT_DET_VAL:
+		gl_bt_coexist.bt_info.bt_ant_det_val = tmp_buf[3];
+		break;
+	case BT_SEQ_GET_BT_BLE_SCAN_PARA:
+		gl_bt_coexist.bt_info.bt_ble_scan_para = tmp_buf[3] |
+							 (tmp_buf[4] << 8) |
+							 (tmp_buf[5] << 16) |
+							 (tmp_buf[6] << 24);
+		break;
+	case BT_SEQ_GET_BT_BLE_SCAN_TYPE:
+		gl_bt_coexist.bt_info.bt_ble_scan_type = tmp_buf[3];
+		break;
 	}
+
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
+		 "btmpinfo complete req_num=%d\n", seq);
+
+	complete(&gl_bt_coexist.bt_mp_comp);
 }
 
 bool rtl_btc_is_limited_dig(struct rtl_priv *rtlpriv)
