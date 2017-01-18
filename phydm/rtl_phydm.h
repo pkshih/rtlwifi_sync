@@ -32,6 +32,8 @@
 #define dm_phy_status_info	_odm_phy_status_info_
 #define odm_ic_type	odm_ic_type_e
 #define odm_rf_radio_path	odm_rf_radio_path_e
+#define odm_rf_path		odm_rf_path_e
+#define odm_bw			odm_bw_e
 #endif
 
 struct rtl_phydm_ops *rtl_phydm_get_ops_pointer(void);
