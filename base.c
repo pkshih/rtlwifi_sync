@@ -326,6 +326,10 @@ enum {
 
 static u32 rtl_data_to_int(struct rtl_priv *rtlpriv, const void *data, int len)
 {
+	/*
+	 * wpa_supplicant translates the string '01234567' to binary as
+	 * '01 23 45 67', so we treat it as big-endian.
+	 */
 	u32 tmp = 0;
 
 	switch (len) {
@@ -333,10 +337,10 @@ static u32 rtl_data_to_int(struct rtl_priv *rtlpriv, const void *data, int len)
 		tmp = *((u8 *)data);
 		break;
 	case 2:
-		tmp = be16_to_cpu(*((u16 *)data));
+		tmp = be16_to_cpu(*((__be16 *)data));
 		break;
 	case 4:
-		tmp = be32_to_cpu(*((u32 *)data));
+		tmp = be32_to_cpu(*((__be32 *)data));
 		break;
 	default:
 		RT_TRACE(rtlpriv, COMP_VENDOR_CMD, DBG_WARNING,
