@@ -330,7 +330,7 @@ static int rtl_op_add_interface(struct ieee80211_hw *hw,
 	mac->retry_long = retry_limit;
 	mac->retry_short = retry_limit;
 	rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_RETRY_LIMIT,
-			(u8 *) (&retry_limit));
+			(u8 *)(&retry_limit));
 out:
 	mutex_unlock(&rtlpriv->locks.conf_mutex);
 	return err;
@@ -629,8 +629,7 @@ static int rtl_op_config(struct ieee80211_hw *hw, u32 changed)
 	}
 
 	/*For LPS */
-	if ((changed & IEEE80211_CONF_CHANGE_PS) &&
-	    rtlpriv->psc.swctrl_lps && !rtlpriv->psc.fwctrl_lps) {
+	if (changed & IEEE80211_CONF_CHANGE_PS) {
 		cancel_delayed_work(&rtlpriv->works.ps_work);
 		cancel_delayed_work(&rtlpriv->works.ps_rfon_wq);
 		if (conf->flags & IEEE80211_CONF_PS) {
@@ -663,7 +662,7 @@ static int rtl_op_config(struct ieee80211_hw *hw, u32 changed)
 			mac->retry_long = hw->conf.long_frame_max_tx_count;
 			mac->retry_short = hw->conf.long_frame_max_tx_count;
 			rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_RETRY_LIMIT,
-				(u8 *) (&hw->conf.long_frame_max_tx_count));
+				(u8 *)(&hw->conf.long_frame_max_tx_count));
 		}
 	}
 
@@ -1464,9 +1463,6 @@ static void rtl_op_sw_scan_complete(struct ieee80211_hw *hw,
 	RT_TRACE(rtlpriv, COMP_MAC80211, DBG_LOUD, "\n");
 	mac->act_scanning = false;
 	mac->skip_scan = false;
-
-	rtlpriv->btcoexist.btc_info.ap_num = rtlpriv->scan_list.num;
-
 	if (rtlpriv->link_info.higher_busytraffic)
 		return;
 
@@ -1504,8 +1500,6 @@ static int rtl_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 	int err = 0;
 	u8 mac_addr[ETH_ALEN];
 	u8 bcast_addr[ETH_ALEN] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff };
-
-	rtlpriv->btcoexist.btc_info.in_4way = false;
 
 	if (rtlpriv->cfg->mod_params->sw_crypto || rtlpriv->sec.use_sw_sec) {
 		RT_TRACE(rtlpriv, COMP_ERR, DBG_WARNING,
@@ -1550,7 +1544,7 @@ static int rtl_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 		key_type = AESCMAC_ENCRYPTION;
 		RT_TRACE(rtlpriv, COMP_SEC, DBG_DMESG, "alg:CMAC\n");
 		RT_TRACE(rtlpriv, COMP_SEC, DBG_DMESG,
-			 "HW don't support CMAC encrypiton, use software CMAC encrypiton\n");
+			 "HW don't support CMAC encryption, use software CMAC encryption\n");
 		err = -EOPNOTSUPP;
 		goto out_unlock;
 	default:
@@ -1631,7 +1625,7 @@ static int rtl_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 				 "set pairwise key\n");
 			if (!sta) {
 				WARN_ONCE(true,
-					  "pairwise key without mac_addr\n");
+					  "rtlwifi: pairwise key without mac_addr\n");
 
 				err = -EOPNOTSUPP;
 				goto out_unlock;
@@ -1676,8 +1670,6 @@ static int rtl_op_set_key(struct ieee80211_hw *hw, enum set_key_cmd cmd,
 		 *so don't use rtl_cam_reset_all_entry
 		 *or clear all entry here.
 		 */
-		rtl_wait_tx_report_acked(hw, 500); /* wait 500ms for TX ack */
-
 		rtl_cam_delete_one_entry(hw, mac_addr, key_idx);
 		break;
 	default:
@@ -1823,7 +1815,7 @@ bool rtl_hal_pwrseqcmdparsing(struct rtl_priv *rtlpriv, u8 cut_version,
 				return true;
 			default:
 				WARN_ONCE(true,
-					  "rtl_hal_pwrseqcmdparsing(): Unknown CMD!!\n");
+					  "rtlwifi: rtl_hal_pwrseqcmdparsing(): Unknown CMD!!\n");
 				break;
 			}
 		}

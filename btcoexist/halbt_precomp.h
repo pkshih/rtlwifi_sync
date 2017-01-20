@@ -37,29 +37,6 @@
 
 #include "halbtcoutsrc.h"
 
-/* Interface type */
-#define RT_PCI_INTERFACE	1
-#define RT_USB_INTERFACE	2
-#define RT_SDIO_INTERFACE	3
-#define DEV_BUS_TYPE		RT_PCI_INTERFACE
-
-/* IC type */
-#define RTL_HW_TYPE(_Adapter)	(rtl_hal((struct rtl_priv *)_Adapter)->hw_type)
-
-#define IS_NEW_GENERATION_IC(_Adapter)		\
-			(RTL_HW_TYPE(_Adapter) >= HARDWARE_TYPE_RTL8192EE)
-#define IS_HARDWARE_TYPE_8812(_Adapter)		\
-			(RTL_HW_TYPE(_Adapter) == HARDWARE_TYPE_RTL8812AE)
-#define IS_HARDWARE_TYPE_8821(_Adapter)		\
-			(RTL_HW_TYPE(_Adapter) == HARDWARE_TYPE_RTL8821AE)
-#define IS_HARDWARE_TYPE_8723A(_Adapter)	\
-			(RTL_HW_TYPE(_Adapter) == HARDWARE_TYPE_RTL8723AE)
-#define IS_HARDWARE_TYPE_8723B(_Adapter)	\
-			(RTL_HW_TYPE(_Adapter) == HARDWARE_TYPE_RTL8723BE)
-#define IS_HARDWARE_TYPE_8192E(_Adapter)	\
-			(RTL_HW_TYPE(_Adapter) == HARDWARE_TYPE_RTL8192EE)
-
-
 #include "halbtc8192e2ant.h"
 #include "halbtc8723b1ant.h"
 #include "halbtc8723b2ant.h"

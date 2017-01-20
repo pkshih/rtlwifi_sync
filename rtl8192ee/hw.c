@@ -699,9 +699,9 @@ static bool _rtl92ee_llt_table_init(struct ieee80211_hw *hw)
 	u8 txpktbuf_bndy;
 	u8 u8tmp, testcnt = 0;
 
-	txpktbuf_bndy = 0xF7;
+	txpktbuf_bndy = 0xFA;
 
-	rtl_write_dword(rtlpriv, REG_RQPN, 0x80E60808);
+	rtl_write_dword(rtlpriv, REG_RQPN, 0x80E90808);
 
 	rtl_write_byte(rtlpriv, REG_TRXFF_BNDY, txpktbuf_bndy);
 	rtl_write_word(rtlpriv, REG_TRXFF_BNDY + 2, 0x3d00 - 1);
@@ -1006,7 +1006,7 @@ static void _rtl92ee_hw_configure(struct ieee80211_hw *hw)
 	rtl_write_word(rtlpriv, REG_SIFS_TRX, 0x100a);
 
 	/* Note Data sheet don't define */
-	rtl_write_word(rtlpriv, 0x4C7, 0x80);
+	rtl_write_byte(rtlpriv, 0x4C7, 0x80);
 
 	rtl_write_byte(rtlpriv, REG_RX_PKT_LIMIT, 0x20);
 
@@ -1581,7 +1581,7 @@ void rtl92ee_set_qos(struct ieee80211_hw *hw, int aci)
 		rtl_write_dword(rtlpriv, REG_EDCA_VO_PARAM, 0x2f3222);
 		break;
 	default:
-		WARN_ONCE(true, "invalid aci: %d !\n", aci);
+		WARN_ONCE(true, "rtl8192ee: invalid aci: %d !\n", aci);
 		break;
 	}
 }
@@ -1591,9 +1591,10 @@ void rtl92ee_enable_interrupt(struct ieee80211_hw *hw)
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
 
+	rtlpci->irq_enabled = true;
+	smp_wmb(); /* ensure that the enabled flag is the same for all cpus */
 	rtl_write_dword(rtlpriv, REG_HIMR, rtlpci->irq_mask[0] & 0xFFFFFFFF);
 	rtl_write_dword(rtlpriv, REG_HIMRE, rtlpci->irq_mask[1] & 0xFFFFFFFF);
-	rtlpci->irq_enabled = true;
 }
 
 void rtl92ee_disable_interrupt(struct ieee80211_hw *hw)
@@ -1601,10 +1602,9 @@ void rtl92ee_disable_interrupt(struct ieee80211_hw *hw)
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
 
+	rtlpci->irq_enabled = false;
 	rtl_write_dword(rtlpriv, REG_HIMR, IMR_DISABLED);
 	rtl_write_dword(rtlpriv, REG_HIMRE, IMR_DISABLED);
-	rtlpci->irq_enabled = false;
-	/*synchronize_irq(rtlpci->pdev->irq);*/
 }
 
 static void _rtl92ee_poweroff_adapter(struct ieee80211_hw *hw)
@@ -1671,8 +1671,7 @@ void rtl92ee_card_disable(struct ieee80211_hw *hw)
 	_rtl92ee_poweroff_adapter(hw);
 
 	/* after power off we should do iqk again */
-	if (!rtlpriv->cfg->ops->get_btc_status())
-		rtlpriv->phy.iqk_initialized = false;
+	rtlpriv->phy.iqk_initialized = false;
 }
 
 void rtl92ee_interrupt_recognized(struct ieee80211_hw *hw,
@@ -2134,12 +2133,7 @@ static void _rtl92ee_read_adapter_info(struct ieee80211_hw *hw)
 	if ((*(u8 *)&hwinfo[EEPROM_RF_BOARD_OPTION_92E]) == 0xFF)
 		rtlefuse->board_type = 0;
 
-	if (rtlpriv->btcoexist.btc_info.btcoexist == 1)
-		rtlefuse->board_type |= ODM_BOARD_BT;
-
 	rtlhal->board_type = rtlefuse->board_type;
-	RT_TRACE(rtlpriv, COMP_INIT, DBG_LOUD,
-		 "board_type = 0x%x\n", rtlefuse->board_type);
 	/*parse xtal*/
 	rtlefuse->crystalcap = hwinfo[EEPROM_XTAL_92E];
 	if (hwinfo[EEPROM_XTAL_92E] == 0xFF)

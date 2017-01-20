@@ -881,9 +881,6 @@ static void _rtl_pci_rx_interrupt(struct ieee80211_hw *hw)
 				if (unicast)
 					rtlpriv->link_info.num_rx_inperiod++;
 			}
-
-			rtl_collect_scan_list(hw, skb);
-
 			/* static bcn for roaming */
 			rtl_beacon_statistic(hw, skb);
 			rtl_p2p_info(hw, (void *)skb->data, skb->len);
@@ -950,6 +947,7 @@ static irqreturn_t _rtl_pci_interrupt(int irq, void *dev_id)
 	u32 intb = 0;
 	irqreturn_t ret = IRQ_HANDLED;
 
+	smp_rmb(); /* barrior to ensure any change in irq_enabled is settled */
 	if (rtlpci->irq_enabled == 0)
 		return ret;
 
@@ -1829,7 +1827,6 @@ static int rtl_pci_start(struct ieee80211_hw *hw)
 	rtlpci->driver_is_goingto_unload = false;
 	if (rtlpriv->cfg->ops->get_btc_status &&
 	    rtlpriv->cfg->ops->get_btc_status()) {
-		rtlpriv->btcoexist.btc_info.ap_num = 36;
 		rtlpriv->btcoexist.btc_ops->btc_init_variables(rtlpriv);
 		rtlpriv->btcoexist.btc_ops->btc_init_hal_vars(rtlpriv);
 	}
@@ -2186,7 +2183,7 @@ int rtl_pci_probe(struct pci_dev *pdev,
 	if (!pci_set_dma_mask(pdev, DMA_BIT_MASK(32))) {
 		if (pci_set_consistent_dma_mask(pdev, DMA_BIT_MASK(32))) {
 			WARN_ONCE(true,
-				  "Unable to obtain 32bit DMA for consistent allocations\n");
+				  "rtlwifi: Unable to obtain 32bit DMA for consistent allocations\n");
 			err = -ENOMEM;
 			goto fail1;
 		}
@@ -2223,20 +2220,10 @@ int rtl_pci_probe(struct pci_dev *pdev,
 	rtlpriv->intf_ops = &rtl_pci_ops;
 	rtlpriv->glb_var = &rtl_global_var;
 
-	/*
-	 *init dbgp flags before all
-	 *other functions, because we will
-	 *use it in other funtions like
-	 *RT_TRACE/RT_PRINT/RTL_PRINT_DATA
-	 *you can not use these macro
-	 *before this
-	 */
-	rtl_dbgp_flag_init(hw);
-
 	/* MEM map */
 	err = pci_request_regions(pdev, KBUILD_MODNAME);
 	if (err) {
-		WARN_ONCE(true, "Can't obtain PCI resources\n");
+		WARN_ONCE(true, "rtlwifi: Can't obtain PCI resources\n");
 		goto fail1;
 	}
 
@@ -2249,7 +2236,7 @@ int rtl_pci_probe(struct pci_dev *pdev,
 			(unsigned long)pci_iomap(pdev,
 			rtlpriv->cfg->bar_id, pmem_len);
 	if (rtlpriv->io.pci_mem_start == 0) {
-		WARN_ONCE(true, "Can't map PCI mem\n");
+		WARN_ONCE(true, "rtlwifi: Can't map PCI mem\n");
 		err = -ENOMEM;
 		goto fail2;
 	}
@@ -2310,15 +2297,6 @@ int rtl_pci_probe(struct pci_dev *pdev,
 	}
 	rtlpriv->mac80211.mac80211_registered = 1;
 
-	err = sysfs_create_group(&pdev->dev.kobj, &rtl_attribute_group);
-	if (err) {
-		pr_err("failed to create sysfs device attributes\n");
-		goto fail3;
-	}
-
-	/* add for debug */
-	rtl_debug_add_one(hw);
-
 	/*init rfkill */
 	rtl_init_rfkill(hw);	/* Init PCI sw */
 
@@ -2367,11 +2345,6 @@ void rtl_pci_disconnect(struct pci_dev *pdev)
 	/* just in case driver is removed before firmware callback */
 	wait_for_completion(&rtlpriv->firmware_loading_complete);
 	clear_bit(RTL_STATUS_INTERFACE_START, &rtlpriv->status);
-
-	sysfs_remove_group(&pdev->dev.kobj, &rtl_attribute_group);
-
-	/* remove form debug */
-	rtl_debug_remove_one(hw);
 
 	/*ieee80211_unregister_hw will call ops_stop */
 	if (rtlmac->mac80211_registered == 1) {
