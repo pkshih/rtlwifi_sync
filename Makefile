@@ -40,6 +40,8 @@ obj-m	+= rtl_usb.o
 rtl_usb-objs	:=		usb.o
 
 obj-m	+= btcoexist/
+obj-m	+= halmac/
+obj-m	+= phydm/
 obj-m	+= rtl8188ee/
 obj-m	+= rtl8192c/
 obj-m	+= rtl8192ce/

@@ -133,7 +133,7 @@ static void _rtl8723e_fill_h2c_command(struct ieee80211_hw *hw, u8 element_id,
 			wait_h2c_limmit--;
 			if (wait_h2c_limmit == 0) {
 				RT_TRACE(rtlpriv, COMP_CMD, DBG_LOUD,
-					 "Wating too long for FW read clear HMEBox(%d)!\n",
+					 "Waiting too long for FW read clear HMEBox(%d)!\n",
 					 boxnum);
 				break;
 			}
@@ -259,7 +259,7 @@ void rtl8723e_fill_h2c_cmd(struct ieee80211_hw *hw,
 
 	if (!rtlhal->fw_ready) {
 		WARN_ONCE(true,
-			  "return H2C cmd because of Fw download fail!!!\n");
+			  "rtl8723ae: error H2C cmd because of Fw download fail!!!\n");
 		return;
 	}
 	memset(tmp_cmdbuf, 0, 8);

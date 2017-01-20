@@ -1245,7 +1245,7 @@ void rtl92se_set_qos(struct ieee80211_hw *hw, int aci)
 		rtl_write_dword(rtlpriv, EDCAPARA_VO, 0x2f3222);
 		break;
 	default:
-		WARN_ONCE(true, "invalid aci: %d !\n", aci);
+		WARN_ONCE(true, "rtl8192se: invalid aci: %d !\n", aci);
 		break;
 	}
 }
@@ -1255,10 +1255,11 @@ void rtl92se_enable_interrupt(struct ieee80211_hw *hw)
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
 
+	rtlpci->irq_enabled = true;
+	smp_wmb(); /* ensure that the enabled flag is the same for all cpus */
 	rtl_write_dword(rtlpriv, INTA_MASK, rtlpci->irq_mask[0]);
 	/* Support Bit 32-37(Assign as Bit 0-5) interrupt setting now */
 	rtl_write_dword(rtlpriv, INTA_MASK + 4, rtlpci->irq_mask[1] & 0x3F);
-	rtlpci->irq_enabled = true;
 }
 
 void rtl92se_disable_interrupt(struct ieee80211_hw *hw)
@@ -1271,9 +1272,9 @@ void rtl92se_disable_interrupt(struct ieee80211_hw *hw)
 	if (!rtlpriv || !rtlpriv->max_fw_size)
 		return;
 	rtlpci = rtl_pcidev(rtl_pcipriv(hw));
+	rtlpci->irq_enabled = false;
 	rtl_write_dword(rtlpriv, INTA_MASK, 0);
 	rtl_write_dword(rtlpriv, INTA_MASK + 4, 0);
-	rtlpci->irq_enabled = false;
 }
 
 static u8 _rtl92s_set_sysclk(struct ieee80211_hw *hw, u8 data)

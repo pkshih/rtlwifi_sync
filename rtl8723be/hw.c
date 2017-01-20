@@ -847,8 +847,6 @@ static bool _rtl8723be_init_mac(struct ieee80211_hw *hw)
 		return false;
 	}
 
-	rtlpriv->btcoexist.btc_ops->btc_power_on_setting(rtlpriv);
-
 	bytetmp = rtl_read_byte(rtlpriv, REG_MULTI_FUNC_CTRL);
 	rtl_write_byte(rtlpriv, REG_MULTI_FUNC_CTRL, bytetmp | BIT(3));
 
@@ -1443,9 +1441,7 @@ int rtl8723be_hw_init(struct ieee80211_hw *hw)
 		 */
 		if (rtlpriv->btcoexist.btc_info.ant_num == ANT_X2 ||
 		    !rtlpriv->cfg->ops->get_btc_status()) {
-			rtl8723be_phy_iq_calibrate(hw,
-						   (rtlphy->iqk_initialized ?
-						    true : false));
+			rtl8723be_phy_iq_calibrate(hw, false);
 			rtlphy->iqk_initialized = true;
 		}
 		rtl8723be_dm_check_txpower_tracking(hw);
@@ -1633,7 +1629,7 @@ void rtl8723be_set_qos(struct ieee80211_hw *hw, int aci)
 		rtl_write_dword(rtlpriv, REG_EDCA_VO_PARAM, 0x2f3222);
 		break;
 	default:
-		WARN_ONCE(true, "invalid aci: %d !\n", aci);
+		WARN_ONCE(true, "rtl8723be: invalid aci: %d !\n", aci);
 		break;
 	}
 }
@@ -1643,9 +1639,10 @@ void rtl8723be_enable_interrupt(struct ieee80211_hw *hw)
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
 
+	rtlpci->irq_enabled = true;
+	smp_wmb(); /* ensure that the enabled flag is the same for all cpus */
 	rtl_write_dword(rtlpriv, REG_HIMR, rtlpci->irq_mask[0] & 0xFFFFFFFF);
 	rtl_write_dword(rtlpriv, REG_HIMRE, rtlpci->irq_mask[1] & 0xFFFFFFFF);
-	rtlpci->irq_enabled = true;
 
 	/*enable system interrupt*/
 	rtl_write_dword(rtlpriv, REG_HSIMR, rtlpci->sys_irq_mask & 0xFFFFFFFF);
@@ -1656,10 +1653,9 @@ void rtl8723be_disable_interrupt(struct ieee80211_hw *hw)
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
 
+	rtlpci->irq_enabled = false;
 	rtl_write_dword(rtlpriv, REG_HIMR, IMR_DISABLED);
 	rtl_write_dword(rtlpriv, REG_HIMRE, IMR_DISABLED);
-	rtlpci->irq_enabled = false;
-	/*synchronize_irq(rtlpci->pdev->irq);*/
 }
 
 void rtl8723be_card_disable(struct ieee80211_hw *hw)
@@ -1679,8 +1675,7 @@ void rtl8723be_card_disable(struct ieee80211_hw *hw)
 	_rtl8723be_poweroff_adapter(hw);
 
 	/* after power off we should do iqk again */
-	if (!rtlpriv->cfg->ops->get_btc_status())
-		rtlpriv->phy.iqk_initialized = false;
+	rtlpriv->phy.iqk_initialized = false;
 }
 
 void rtl8723be_interrupt_recognized(struct ieee80211_hw *hw,
@@ -2113,13 +2108,6 @@ static void _rtl8723be_read_adapter_info(struct ieee80211_hw *hw,
 	rtl8723be_read_bt_coexist_info_from_hwpg(hw,
 						 rtlefuse->autoload_failflag,
 						 hwinfo);
-
-	if (rtlpriv->btcoexist.btc_info.btcoexist == 1)
-		rtlefuse->board_type |= ODM_BOARD_BT;
-
-	rtlhal->board_type = rtlefuse->board_type;
-	RT_TRACE(rtlpriv, COMP_INIT, DBG_LOUD,
-		 "board_type = 0x%x\n", rtlefuse->board_type);
 
 	rtlhal->package_type = _rtl8723be_read_package_type(hw);
 
