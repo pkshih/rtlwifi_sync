@@ -166,8 +166,6 @@
 	SET_BITS_TO_LE_4BYTE(__pdesc+8, 17, 1, __val)
 #define SET_TX_DESC_RAW(__pdesc, __val)			\
 	SET_BITS_TO_LE_4BYTE(__pdesc+8, 18, 1, __val)
-#define SET_TX_DESC_SPE_RPT(__pdesc, __val)		\
-	SET_BITS_TO_LE_4BYTE(__pdesc+8, 19, 1, __val)
 #define SET_TX_DESC_AMPDU_DENSITY(__pdesc, __val)	\
 	SET_BITS_TO_LE_4BYTE(__pdesc+8, 20, 3, __val)
 #define SET_TX_DESC_BT_NULL(__pdesc, __val)		\
@@ -251,8 +249,6 @@
 	SET_BITS_TO_LE_4BYTE(__pdesc+20, 28, 3, __val)
 
 /* Dword 6 */
-#define SET_TX_DESC_SW_DEFINE(__pdesc, __val)		\
-	SET_BITS_TO_LE_4BYTE(__pdesc+24, 0, 12, __val)
 #define SET_TX_DESC_ANTSEL_A(__pdesc, __val)		\
 	SET_BITS_TO_LE_4BYTE(__pdesc+24, 16, 3, __val)
 #define SET_TX_DESC_ANTSEL_B(__pdesc, __val)		\

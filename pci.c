@@ -945,6 +945,8 @@ static irqreturn_t _rtl_pci_interrupt(int irq, void *dev_id)
 	unsigned long flags;
 	u32 inta = 0;
 	u32 intb = 0;
+	u32 intc = 0;
+	u32 intd = 0;
 	irqreturn_t ret = IRQ_HANDLED;
 
 	smp_rmb(); /* barrior to ensure any change in irq_enabled is settled */
@@ -955,7 +957,7 @@ static irqreturn_t _rtl_pci_interrupt(int irq, void *dev_id)
 	rtlpriv->cfg->ops->disable_interrupt(hw);
 
 	/*read ISR: 4/8bytes */
-	rtlpriv->cfg->ops->interrupt_recognized(hw, &inta, &intb);
+	rtlpriv->cfg->ops->interrupt_recognized(hw, &inta, &intb, &intc, &intd);
 
 	/*Shared IRQ or HW disappared */
 	if (!inta || inta == 0xffff)
@@ -1028,6 +1030,16 @@ static irqreturn_t _rtl_pci_interrupt(int irq, void *dev_id)
 		RT_TRACE(rtlpriv, COMP_INTR, DBG_TRACE,
 			 "Vo TX OK interrupt!\n");
 		_rtl_pci_tx_isr(hw, VO_QUEUE);
+	}
+
+	if (rtlhal->hw_type == HARDWARE_TYPE_RTL8822BE) {
+		if (intd & rtlpriv->cfg->maps[RTL_IMR_H2CDOK]) {
+			rtlpriv->link_info.num_tx_inperiod++;
+
+			RT_TRACE(rtlpriv, COMP_INTR, DBG_TRACE,
+				 "H2C TX OK interrupt!\n");
+			_rtl_pci_tx_isr(hw, H2C_QUEUE);
+		}
 	}
 
 	if (rtlhal->hw_type == HARDWARE_TYPE_RTL8192SE) {
@@ -1164,6 +1176,8 @@ static void _rtl_pci_init_trx_var(struct ieee80211_hw *hw)
 
 	if (rtlhal->hw_type == HARDWARE_TYPE_RTL8192EE)
 		desc_num = TX_DESC_NUM_92E;
+	else if (rtlhal->hw_type == HARDWARE_TYPE_RTL8822BE)
+		desc_num = TX_DESC_NUM_8822B;
 	else
 		desc_num = RT_TXDESC_NUM;
 

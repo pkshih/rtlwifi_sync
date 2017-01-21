@@ -126,11 +126,6 @@
 	SET_BITS_TO_LE_4BYTE(__tx_desc + 0x08, 20, 3, __value)
 #define GET_TX_DESC_AMPDU_DENSITY(__tx_desc)                                   \
 	LE_BITS_TO_4BYTE(__tx_desc + 0x08, 20, 3)
-#ifdef SET_TX_DESC_SPE_RPT
-#undef SET_TX_DESC_SPE_RPT
-#endif
-#define SET_TX_DESC_SPE_RPT(__tx_desc, __value)                                \
-	SET_BITS_TO_LE_4BYTE(__tx_desc + 0x08, 19, 1, __value)
 #define GET_TX_DESC_SPE_RPT(__tx_desc) LE_BITS_TO_4BYTE(__tx_desc + 0x08, 19, 1)
 #define SET_TX_DESC_RAW(__tx_desc, __value)                                    \
 	SET_BITS_TO_LE_4BYTE(__tx_desc + 0x08, 18, 1, __value)
@@ -359,11 +354,6 @@
 #define SET_TX_DESC_MBSSID(__tx_desc, __value)                                 \
 	SET_BITS_TO_LE_4BYTE(__tx_desc + 0x18, 12, 4, __value)
 #define GET_TX_DESC_MBSSID(__tx_desc) LE_BITS_TO_4BYTE(__tx_desc + 0x18, 12, 4)
-#ifdef SET_TX_DESC_SW_DEFINE
-#undef SET_TX_DESC_SW_DEFINE
-#endif
-#define SET_TX_DESC_SW_DEFINE(__tx_desc, __value)                              \
-	SET_BITS_TO_LE_4BYTE(__tx_desc + 0x18, 0, 12, __value)
 #define GET_TX_DESC_SW_DEFINE(__tx_desc)                                       \
 	LE_BITS_TO_4BYTE(__tx_desc + 0x18, 0, 12)
 

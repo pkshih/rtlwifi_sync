@@ -1318,6 +1318,36 @@ static void setup_arp_tx(struct rtl_priv *rtlpriv, struct rtl_ps_ctl *ppsc)
 	ppsc->last_delaylps_stamp_jiffies = jiffies;
 }
 
+static const u8 *rtl_skb_ether_type_ptr(struct ieee80211_hw *hw,
+					struct sk_buff *skb, bool is_enc)
+{
+	struct rtl_priv *rtlpriv = rtl_priv(hw);
+	u8 mac_hdr_len = ieee80211_get_hdrlen_from_skb(skb);
+	u8 encrypt_header_len = 0;
+	u8 offset;
+
+	switch (rtlpriv->sec.pairwise_enc_algorithm) {
+	case WEP40_ENCRYPTION:
+	case WEP104_ENCRYPTION:
+		encrypt_header_len = 4;/*WEP_IV_LEN*/
+		break;
+	case TKIP_ENCRYPTION:
+		encrypt_header_len = 8;/*TKIP_IV_LEN*/
+		break;
+	case AESCCMP_ENCRYPTION:
+		encrypt_header_len = 8;/*CCMP_HDR_LEN;*/
+		break;
+	default:
+		break;
+	}
+
+	offset = mac_hdr_len + SNAP_SIZE;
+	if (is_enc)
+		offset += encrypt_header_len;
+
+	return skb->data + offset;
+}
+
 /*should call before software enc*/
 u8 rtl_is_special_data(struct ieee80211_hw *hw, struct sk_buff *skb, u8 is_tx,
 		       bool is_enc)
@@ -1404,6 +1434,97 @@ end:
 	return false;
 }
 EXPORT_SYMBOL_GPL(rtl_is_special_data);
+
+bool rtl_is_tx_report_skb(struct ieee80211_hw *hw, struct sk_buff *skb)
+{
+	u16 ether_type;
+	const u8 *ether_type_ptr;
+
+	ether_type_ptr = rtl_skb_ether_type_ptr(hw, skb, true);
+	ether_type = be16_to_cpup((__be16 *)ether_type_ptr);
+
+	/* EAPOL */
+	if (ether_type == ETH_P_PAE)
+		return true;
+
+	return false;
+}
+
+static u16 rtl_get_tx_report_sn(struct ieee80211_hw *hw)
+{
+	struct rtl_priv *rtlpriv = rtl_priv(hw);
+	struct rtl_tx_report *tx_report = &rtlpriv->tx_report;
+	u16 sn;
+
+	sn = atomic_inc_return(&tx_report->sn) & 0x0FFF;
+
+	tx_report->last_sent_sn = sn;
+	tx_report->last_sent_time = jiffies;
+
+	RT_TRACE(rtlpriv, COMP_TX_REPORT, DBG_DMESG,
+		 "Send TX-Report sn=0x%X\n", sn);
+
+	return sn;
+}
+
+void rtl_get_tx_report(struct rtl_tcb_desc *ptcb_desc, u8 *pdesc,
+		       struct ieee80211_hw *hw)
+{
+	if (ptcb_desc->use_spe_rpt) {
+		u16 sn = rtl_get_tx_report_sn(hw);
+
+		SET_TX_DESC_SPE_RPT(pdesc, 1);
+		SET_TX_DESC_SW_DEFINE(pdesc, sn);
+	}
+}
+EXPORT_SYMBOL_GPL(rtl_get_tx_report);
+
+void rtl_tx_report_handler(struct ieee80211_hw *hw, u8 *tmp_buf, u8 c2h_cmd_len)
+{
+	struct rtl_priv *rtlpriv = rtl_priv(hw);
+	struct rtl_tx_report *tx_report = &rtlpriv->tx_report;
+	u16 sn;
+
+	sn = ((tmp_buf[7] & 0x0F) << 8) | tmp_buf[6];
+
+	tx_report->last_recv_sn = sn;
+
+	RT_TRACE(rtlpriv, COMP_TX_REPORT, DBG_DMESG,
+		 "Recv TX-Report st=0x%02X sn=0x%X retry=0x%X\n",
+		 tmp_buf[0], sn, tmp_buf[2]);
+}
+EXPORT_SYMBOL_GPL(rtl_tx_report_handler);
+
+bool rtl_check_tx_report_acked(struct ieee80211_hw *hw)
+{
+	struct rtl_priv *rtlpriv = rtl_priv(hw);
+	struct rtl_tx_report *tx_report = &rtlpriv->tx_report;
+
+	if (tx_report->last_sent_sn == tx_report->last_recv_sn)
+		return true;
+
+	if (time_before(tx_report->last_sent_time + 3 * HZ, jiffies)) {
+		RT_TRACE(rtlpriv, COMP_TX_REPORT, DBG_WARNING,
+			 "Check TX-Report timeout!!\n");
+		return true;	/* 3 sec. (timeout) seen as acked */
+	}
+
+	return false;
+}
+
+void rtl_wait_tx_report_acked(struct ieee80211_hw *hw, u32 wait_ms)
+{
+	struct rtl_priv *rtlpriv = rtl_priv(hw);
+	int i;
+
+	for (i = 0; i < wait_ms; i++) {
+		if (rtl_check_tx_report_acked(hw))
+			break;
+		usleep_range(1000, 2000);
+		RT_TRACE(rtlpriv, COMP_SEC, DBG_DMESG,
+			 "Wait 1ms (%d/%d) to disable key.\n", i, wait_ms);
+	}
+}
 
 /*********************************************************
  *

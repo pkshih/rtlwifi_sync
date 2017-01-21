@@ -52,6 +52,7 @@ obj-m	+= rtl8192se/
 obj-m	+= rtl8723ae/
 obj-m	+= rtl8723be/
 obj-m	+= rtl8821ae/
+obj-m	+= rtl8822be/
 
 ccflags-y += -D__CHECK_ENDIAN__
 

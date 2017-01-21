@@ -905,25 +905,27 @@ void *phydm_get_structure(struct phy_dm_struct *dm, u8 structure_type);
 /*===========================================================*/
 
 #if 0
-#define IS_HARDWARE_TYPE_8188E(_adapter) false
-#define IS_HARDWARE_TYPE_8188F(_adapter) false
-#define IS_HARDWARE_TYPE_8703B(_adapter) false
-#define IS_HARDWARE_TYPE_8723D(_adapter) false
-#define IS_HARDWARE_TYPE_8821C(_adapter) false
-#define IS_HARDWARE_TYPE_8812AU(_adapter) false
-#define IS_HARDWARE_TYPE_8814A(_adapter) false
 #define IS_HARDWARE_TYPE_8814AU(_adapter) false
 #define IS_HARDWARE_TYPE_8814AE(_adapter) false
 #define IS_HARDWARE_TYPE_8814AS(_adapter) false
 #define IS_HARDWARE_TYPE_8723BU(_adapter) false
 #define IS_HARDWARE_TYPE_8822BU(_adapter) false
 #define IS_HARDWARE_TYPE_8822BS(_adapter) false
-#define IS_HARDWARE_TYPE_JAGUAR(_adapter)                                      \
-	(IS_HARDWARE_TYPE_8812(_adapter) || IS_HARDWARE_TYPE_8821(_adapter))
 #define IS_HARDWARE_TYPE_8723AE(_adapter) false
 #define IS_HARDWARE_TYPE_8192C(_adapter) false
 #define IS_HARDWARE_TYPE_8192D(_adapter) false
 #endif
+#define IS_HARDWARE_TYPE_8703B(_adapter) false
+#define IS_HARDWARE_TYPE_8723D(_adapter) false
+#define IS_HARDWARE_TYPE_8821C(_adapter) false
+#define IS_HARDWARE_TYPE_8188E(_adapter) false
+#define IS_HARDWARE_TYPE_8188F(_adapter) false
+#define IS_HARDWARE_TYPE_8192E(_adapter) false
+#define IS_HARDWARE_TYPE_8812AU(_adapter) false
+#define IS_HARDWARE_TYPE_8814A(_adapter) false
+#define IS_HARDWARE_TYPE_JAGUAR(_adapter)                                      \
+	(IS_HARDWARE_TYPE_8812(_adapter) || IS_HARDWARE_TYPE_8821(_adapter))
+
 #define RF_T_METER_92D 0x42
 
 #define GET_RX_STATUS_DESC_RX_MCS(__prx_status_desc)                           \
