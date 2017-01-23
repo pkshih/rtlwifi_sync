@@ -1566,13 +1566,15 @@ static u8 get_pwr_limit_from_table(struct rtl_priv *rtlpriv,
 			continue;
 
 		/* channel */
-		kstrtoul(p->p[5], 10, &tmpl);
+		if (kstrtoul(p->p[5], 10, &tmpl))
+			return ret;
 
 		if (ch_info->channel != tmpl)
 			continue;
 
 		/* value */
-		kstrtoul(p->p[6], 10, &tmpl);
+		if (kstrtoul(p->p[6], 10, &tmpl))
+			return ret;
 
 		if (ret > tmpl)
 			ret = tmpl;
