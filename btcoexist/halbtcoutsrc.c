@@ -30,6 +30,7 @@
  ***********************************************/
 
 struct btc_coexist gl_bt_coexist;
+struct wifi_only_cfg gl_bt_coexist_wifi_only;
 static u8 gl_btc_dbg_buf[BT_TMP_BUF_SIZE];
 
 /***************************************************
@@ -1286,6 +1287,37 @@ bool exhalbtc_initlize_variables(void)
 	return true;
 }
 
+bool exhalbtc_initlize_variables_wifi_only(void *adapter)
+{
+	struct wifi_only_cfg *wifionly_cfg = &gl_bt_coexist_wifi_only;
+	struct wifi_only_haldata *wifionly_haldata =
+					&wifionly_cfg->haldata_info;
+	struct rtl_priv *rtlpriv = adapter;
+
+	memset(&gl_bt_coexist_wifi_only, 0, sizeof(gl_bt_coexist_wifi_only));
+
+	wifionly_cfg->adapter = adapter;
+
+#if DEV_BUS_TYPE == RT_PCI_INTERFACE
+	wifionly_cfg->chip_interface = WIFIONLY_INTF_PCI;
+#elif DEV_BUS_TYPE == RT_USB_INTERFACE
+	wifionly_cfg->chip_interface = WIFIONLY_INTF_USB;
+#elif DEV_BUS_TYPE == RT_SDIO_INTERFACE
+	wifionly_cfg->chip_interface = WIFIONLY_INTF_SDIO;
+#else
+	wifionly_cfg->chip_interface = WIFIONLY_INTF_UNKNOWN;
+#endif
+
+	wifionly_haldata->customer_id = CUSTOMER_NORMAL;
+	wifionly_haldata->efuse_pg_antnum = rtl_get_hwpg_ant_num(rtlpriv);
+	wifionly_haldata->efuse_pg_antpath =
+					rtl_get_hwpg_single_ant_path(rtlpriv);
+	wifionly_haldata->rfe_type = rtl_get_hwpg_rfe_type(rtlpriv);
+	wifionly_haldata->ant_div_cfg = 0;
+
+	return true;
+}
+
 bool exhalbtc_bind_bt_coex_withadapter(void *adapter)
 {
 	struct btc_coexist *btcoexist = &gl_bt_coexist;
@@ -1403,6 +1435,11 @@ void exhalbtc_init_hw_config(struct btc_coexist *btcoexist, bool wifi_only)
 		if (btcoexist->board_info.btdm_ant_num == 2)
 			ex_halbtc8192e2ant_init_hw_config(btcoexist, wifi_only);
 	}
+}
+
+void exhalbtc_init_hw_config_wifi_only(struct wifi_only_cfg *wifionly_cfg)
+{
+
 }
 
 void exhalbtc_init_coex_dm(struct btc_coexist *btcoexist)
@@ -1529,6 +1566,12 @@ void exhalbtc_scan_notify(struct btc_coexist *btcoexist, u8 type)
 	}
 
 	halbtc_normal_low_power(btcoexist);
+}
+
+void exhalbtc_scan_notify_wifi_only(struct wifi_only_cfg *wifionly_cfg,
+				    u8 is_5g)
+{
+
 }
 
 void exhalbtc_connect_notify(struct btc_coexist *btcoexist, u8 action)
@@ -2005,4 +2048,10 @@ void exhalbtc_switch_band_notify(struct btc_coexist *btcoexist, u8 type)
 	halbtc_leave_low_power(btcoexist);
 
 	halbtc_normal_low_power(btcoexist);
+}
+
+void exhalbtc_switch_band_notify_wifi_only(struct wifi_only_cfg *wifionly_cfg,
+					   u8 is_5g)
+{
+
 }

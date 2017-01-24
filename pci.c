@@ -1868,7 +1868,10 @@ static int rtl_pci_start(struct ieee80211_hw *hw)
 		rtlpriv->btcoexist.btc_info.ap_num = 36;
 		rtlpriv->btcoexist.btc_ops->btc_init_variables(rtlpriv);
 		rtlpriv->btcoexist.btc_ops->btc_init_hal_vars(rtlpriv);
-	}
+	} else
+		rtlpriv->btcoexist.btc_ops->btc_init_variables_wifi_only(
+								rtlpriv);
+
 	err = rtlpriv->cfg->ops->hw_init(hw);
 	if (err) {
 		RT_TRACE(rtlpriv, COMP_INIT, DBG_DMESG,
