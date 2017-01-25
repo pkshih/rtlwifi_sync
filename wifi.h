@@ -3118,14 +3118,14 @@ value to host byte ordering.*/
  * Set subfield of little-endian 4-byte value to specified value.
  */
 #define SET_BITS_TO_LE_4BYTE(__pstart, __bitoffset, __bitlen, __val) \
-	*((u32 *)(__pstart)) = \
-	( \
+	*((__le32 *)(__pstart)) = \
+	cpu_to_le32( \
 		LE_BITS_CLEARED_TO_4BYTE(__pstart, __bitoffset, __bitlen) | \
 		((((u32)__val) & BIT_LEN_MASK_32(__bitlen)) << (__bitoffset)) \
 	)
 #define SET_BITS_TO_LE_2BYTE(__pstart, __bitoffset, __bitlen, __val) \
-	*((u16 *)(__pstart)) = \
-	( \
+	*((__le16 *)(__pstart)) = \
+	cpu_to_le16( \
 		LE_BITS_CLEARED_TO_2BYTE(__pstart, __bitoffset, __bitlen) | \
 		((((u16)__val) & BIT_LEN_MASK_16(__bitlen)) << (__bitoffset)) \
 	)
