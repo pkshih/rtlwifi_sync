@@ -3194,10 +3194,11 @@ static void halbtc8192e2ant_run_coexist_mechanism(struct btc_coexist *btcoexist)
 static void halbtc8192e2ant_init_hwconfig(struct btc_coexist *btcoexist,
 					  bool backup)
 {
+	struct rtl_priv *rtlpriv = btcoexist->adapter;
 	u16 u16tmp = 0;
 	u8 u8tmp = 0;
 
-	btc_iface_dbg(INTF_INIT,
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 		      "[BTCoex], 2Ant Init HW Config!!\n");
 
 	if (backup) {
@@ -3281,7 +3282,9 @@ void ex_halbtc8192e2ant_init_hwconfig(struct btc_coexist *btcoexist)
 
 void ex_halbtc8192e2ant_init_coex_dm(struct btc_coexist *btcoexist)
 {
-	btc_iface_dbg(INTF_INIT,
+	struct rtl_priv *rtlpriv = btcoexist->adapter;
+
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 		      "[BTCoex], Coex Mechanism Init!!\n");
 	halbtc8192e2ant_init_coex_dm(btcoexist);
 }
@@ -3509,13 +3512,15 @@ void ex_halbtc8192e2ant_display_coex_info(struct btc_coexist *btcoexist)
 
 void ex_halbtc8192e2ant_ips_notify(struct btc_coexist *btcoexist, u8 type)
 {
+	struct rtl_priv *rtlpriv = btcoexist->adapter;
+
 	if (BTC_IPS_ENTER == type) {
-		btc_iface_dbg(INTF_NOTIFY,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "[BTCoex], IPS ENTER notify\n");
 		coex_sta->under_ips = true;
 		halbtc8192e2ant_coex_alloff(btcoexist);
 	} else if (BTC_IPS_LEAVE == type) {
-		btc_iface_dbg(INTF_NOTIFY,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "[BTCoex], IPS LEAVE notify\n");
 		coex_sta->under_ips = false;
 	}
@@ -3523,12 +3528,14 @@ void ex_halbtc8192e2ant_ips_notify(struct btc_coexist *btcoexist, u8 type)
 
 void ex_halbtc8192e2ant_lps_notify(struct btc_coexist *btcoexist, u8 type)
 {
+	struct rtl_priv *rtlpriv = btcoexist->adapter;
+
 	if (BTC_LPS_ENABLE == type) {
-		btc_iface_dbg(INTF_NOTIFY,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "[BTCoex], LPS ENABLE notify\n");
 		coex_sta->under_lps = true;
 	} else if (BTC_LPS_DISABLE == type) {
-		btc_iface_dbg(INTF_NOTIFY,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "[BTCoex], LPS DISABLE notify\n");
 		coex_sta->under_lps = false;
 	}
@@ -3536,21 +3543,25 @@ void ex_halbtc8192e2ant_lps_notify(struct btc_coexist *btcoexist, u8 type)
 
 void ex_halbtc8192e2ant_scan_notify(struct btc_coexist *btcoexist, u8 type)
 {
+	struct rtl_priv *rtlpriv = btcoexist->adapter;
+
 	if (BTC_SCAN_START == type)
-		btc_iface_dbg(INTF_NOTIFY,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "[BTCoex], SCAN START notify\n");
 	else if (BTC_SCAN_FINISH == type)
-		btc_iface_dbg(INTF_NOTIFY,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "[BTCoex], SCAN FINISH notify\n");
 }
 
 void ex_halbtc8192e2ant_connect_notify(struct btc_coexist *btcoexist, u8 type)
 {
+	struct rtl_priv *rtlpriv = btcoexist->adapter;
+
 	if (BTC_ASSOCIATE_START == type)
-		btc_iface_dbg(INTF_NOTIFY,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "[BTCoex], CONNECT START notify\n");
 	else if (BTC_ASSOCIATE_FINISH == type)
-		btc_iface_dbg(INTF_NOTIFY,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "[BTCoex], CONNECT FINISH notify\n");
 }
 
@@ -3568,10 +3579,10 @@ void ex_halbtc8192e2ant_media_status_notify(struct btc_coexist *btcoexist,
 		return;
 
 	if (BTC_MEDIA_CONNECT == type)
-		btc_iface_dbg(INTF_NOTIFY,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "[BTCoex], MEDIA connect notify\n");
 	else
-		btc_iface_dbg(INTF_NOTIFY,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "[BTCoex], MEDIA disconnect notify\n");
 
 	/* only 2.4G we need to inform bt the chnl mask */
@@ -3603,8 +3614,10 @@ void ex_halbtc8192e2ant_media_status_notify(struct btc_coexist *btcoexist,
 void ex_halbtc8192e2ant_special_packet_notify(struct btc_coexist *btcoexist,
 					      u8 type)
 {
+	struct rtl_priv *rtlpriv = btcoexist->adapter;
+
 	if (type == BTC_PACKET_DHCP)
-		btc_iface_dbg(INTF_NOTIFY,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "[BTCoex], DHCP Packet notify\n");
 }
 
@@ -3624,7 +3637,7 @@ void ex_halbtc8192e2ant_bt_info_notify(struct btc_coexist *btcoexist,
 		rsp_source = BT_INFO_SRC_8192E_2ANT_WIFI_FW;
 	coex_sta->bt_info_c2h_cnt[rsp_source]++;
 
-	btc_iface_dbg(INTF_NOTIFY,
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 		      "[BTCoex], Bt info[%d], length=%d, hex data = [",
 		      rsp_source, length);
 	for (i = 0; i < length; i++) {
@@ -3632,10 +3645,10 @@ void ex_halbtc8192e2ant_bt_info_notify(struct btc_coexist *btcoexist,
 		if (i == 1)
 			bt_info = tmp_buf[i];
 		if (i == length-1)
-			btc_iface_dbg(INTF_NOTIFY,
+			RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 				      "0x%02x]\n", tmp_buf[i]);
 		else
-			btc_iface_dbg(INTF_NOTIFY,
+			RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 				      "0x%02x, ", tmp_buf[i]);
 	}
 
@@ -3775,7 +3788,9 @@ void ex_halbtc8192e2ant_stack_operation_notify(struct btc_coexist *btcoexist,
 
 void ex_halbtc8192e2ant_halt_notify(struct btc_coexist *btcoexist)
 {
-	btc_iface_dbg(INTF_NOTIFY, "[BTCoex], Halt notify\n");
+	struct rtl_priv *rtlpriv = btcoexist->adapter;
+
+	RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD, "[BTCoex], Halt notify\n");
 
 	halbtc8192e2ant_IgnoreWlanAct(btcoexist, FORCE_EXEC, true);
 	ex_halbtc8192e2ant_media_status_notify(btcoexist, BTC_MEDIA_DISCONNECT);
@@ -3793,24 +3808,24 @@ void ex_halbtc8192e2ant_periodical(struct btc_coexist *btcoexist)
 		 "=======================Periodical=======================\n");
 	if (dis_ver_info_cnt <= 5) {
 		dis_ver_info_cnt += 1;
-		btc_iface_dbg(INTF_INIT,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "************************************************\n");
-		btc_iface_dbg(INTF_INIT,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "Ant PG Num/ Ant Mech/ Ant Pos = %d/ %d/ %d\n",
 			      board_info->pg_ant_num, board_info->btdm_ant_num,
 			      board_info->btdm_ant_pos);
-		btc_iface_dbg(INTF_INIT,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "BT stack/ hci ext ver = %s / %d\n",
 			      ((stack_info->profile_notified) ? "Yes" : "No"),
 			      stack_info->hci_version);
 		btcoexist->btc_get(btcoexist, BTC_GET_U4_BT_PATCH_VER,
 				   &bt_patch_ver);
 		btcoexist->btc_get(btcoexist, BTC_GET_U4_WIFI_FW_VER, &fw_ver);
-		btc_iface_dbg(INTF_INIT,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "CoexVer/ FwVer/ PatchVer = %d_%x/ 0x%x/ 0x%x(%d)\n",
 			      glcoex_ver_date_8192e_2ant, glcoex_ver_8192e_2ant,
 			      fw_ver, bt_patch_ver, bt_patch_ver);
-		btc_iface_dbg(INTF_INIT,
+		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
 			      "************************************************\n");
 	}
 
