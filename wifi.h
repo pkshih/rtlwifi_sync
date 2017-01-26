@@ -54,6 +54,10 @@
 #define NUM_NL80211_BANDS	IEEE80211_NUM_BANDS
 #endif
 
+#if (LINUX_VERSION_CODE < KERNEL_VERSION(3, 5, 0))
+#define ether_addr_equal(a, b)  compare_ether_addr(a, b)
+#endif
+
 #define	MASKBYTE0				0xff
 #define	MASKBYTE1				0xff00
 #define	MASKBYTE2				0xff0000
