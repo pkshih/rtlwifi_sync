@@ -2393,7 +2393,7 @@ void ex_halbtc8821a1ant_display_coex_info(struct btc_coexist *btcoexist)
 	RT_TRACE(rtlpriv, COMP_INIT, DBG_DMESG,
 		 "\r\n %-35s = %s",
 		 "BT Info A2DP rate",
-		 (bt_info_ext&BIT0) ?
+		 (bt_info_ext & BIT0) ?
 		 "Basic rate" : "EDR rate");
 
 	for (i = 0; i < BT_INFO_SRC_8821A_1ANT_MAX; i++) {
@@ -2481,19 +2481,19 @@ void ex_halbtc8821a1ant_display_coex_info(struct btc_coexist *btcoexist)
 	u4_tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0xc58);
 	RT_TRACE(rtlpriv, COMP_INIT, DBG_DMESG,
 		 "\r\n %-35s = 0x%x/ 0x%x", "0x778/ 0xc58[29:25]",
-		 u1_tmp[0], (u4_tmp[0]&0x3e000000) >> 25);
+		 u1_tmp[0], (u4_tmp[0] & 0x3e000000) >> 25);
 
 	u1_tmp[0] = btcoexist->btc_read_1byte(btcoexist, 0x8db);
 	RT_TRACE(rtlpriv, COMP_INIT, DBG_DMESG,
 		 "\r\n %-35s = 0x%x", "0x8db[6:5]",
-		 ((u1_tmp[0]&0x60)>>5));
+		 ((u1_tmp[0] & 0x60) >> 5));
 
 	u1_tmp[0] = btcoexist->btc_read_1byte(btcoexist, 0x975);
 	u4_tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0xcb4);
 	RT_TRACE(rtlpriv, COMP_INIT, DBG_DMESG,
 		 "\r\n %-35s = 0x%x/ 0x%x/ 0x%x",
 		 "0xcb4[29:28]/0xcb4[7:0]/0x974[9:8]",
-		 (u4_tmp[0] & 0x30000000)>>28,
+		 (u4_tmp[0] & 0x30000000) >> 28,
 		  u4_tmp[0] & 0xff,
 		  u1_tmp[0] & 0x3);
 
@@ -2503,7 +2503,7 @@ void ex_halbtc8821a1ant_display_coex_info(struct btc_coexist *btcoexist)
 	RT_TRACE(rtlpriv, COMP_INIT, DBG_DMESG,
 		 "\r\n %-35s = 0x%x/ 0x%x/ 0x%x",
 		 "0x40/0x4c[24:23]/0x64[0]",
-		 u1_tmp[0], ((u4_tmp[0]&0x01800000)>>23), u1_tmp[1]&0x1);
+		 u1_tmp[0], ((u4_tmp[0] & 0x01800000) >> 23), u1_tmp[1] & 0x1);
 
 	u4_tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0x550);
 	u1_tmp[0] = btcoexist->btc_read_1byte(btcoexist, 0x522);
@@ -2514,14 +2514,14 @@ void ex_halbtc8821a1ant_display_coex_info(struct btc_coexist *btcoexist)
 	u4_tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0xc50);
 	RT_TRACE(rtlpriv, COMP_INIT, DBG_DMESG,
 		 "\r\n %-35s = 0x%x", "0xc50(dig)",
-		 u4_tmp[0]&0xff);
+		 u4_tmp[0] & 0xff);
 
 	u4_tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0xf48);
 	u1_tmp[0] = btcoexist->btc_read_1byte(btcoexist, 0xa5d);
 	u1_tmp[1] = btcoexist->btc_read_1byte(btcoexist, 0xa5c);
 	RT_TRACE(rtlpriv, COMP_INIT, DBG_DMESG,
 		 "\r\n %-35s = 0x%x/ 0x%x", "OFDM-FA/ CCK-FA",
-		 u4_tmp[0], (u1_tmp[0]<<8) + u1_tmp[1]);
+		 u4_tmp[0], (u1_tmp[0] << 8) + u1_tmp[1]);
 
 	u4_tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0x6c0);
 	u4_tmp[1] = btcoexist->btc_read_4byte(btcoexist, 0x6c4);

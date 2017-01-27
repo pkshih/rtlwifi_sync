@@ -2152,7 +2152,7 @@ static void btc8821a2ant_tdma_dur_adj(struct btc_coexist *btcoexist,
 	if (coex_dm->reset_tdma_adjust) {
 		coex_dm->reset_tdma_adjust = false;
 		RT_TRACE(rtlpriv, COMP_BT_COEXIST, DBG_LOUD,
-			    "[BTCoex], first run TdmaDurationAdjust()!!\n");
+			 "[BTCoex], first run TdmaDurationAdjust()!!\n");
 		if (sco_hid) {
 			if (tx_pause) {
 				if (max_interval == 1) {
@@ -3576,19 +3576,19 @@ ex_halbtc8821a2ant_display_coex_info(
 	u1tmp[1] = btcoexist->btc_read_1byte(btcoexist, 0xc5b);
 	RT_TRACE(rtlpriv, COMP_INIT, DBG_DMESG, "\r\n %-35s = 0x%x/ 0x%x",
 		 "0x8db(ADC)/0xc5b[29:25](DAC)",
-		 ((u1tmp[0]&0x60)>>5), ((u1tmp[1]&0x3e)>>1));
+		 ((u1tmp[0] & 0x60) >> 5), ((u1tmp[1] & 0x3e) >> 1));
 
 	u4tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0xcb4);
 	RT_TRACE(rtlpriv, COMP_INIT, DBG_DMESG, "\r\n %-35s = 0x%x/ 0x%x",
 		 "0xcb4[7:0](ctrl)/ 0xcb4[29:28](val)",
-		 u4tmp[0]&0xff, ((u4tmp[0]&0x30000000)>>28));
+		 u4tmp[0] & 0xff, ((u4tmp[0] & 0x30000000) >> 28));
 
 	u1tmp[0] = btcoexist->btc_read_1byte(btcoexist, 0x40);
 	u4tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0x4c);
 	u4tmp[1] = btcoexist->btc_read_4byte(btcoexist, 0x974);
 	RT_TRACE(rtlpriv, COMP_INIT, DBG_DMESG, "\r\n %-35s = 0x%x/ 0x%x/ 0x%x",
 		 "0x40/ 0x4c[24:23]/ 0x974",
-		 u1tmp[0], ((u4tmp[0]&0x01800000)>>23), u4tmp[1]);
+		 u1tmp[0], ((u4tmp[0] & 0x01800000) >> 23), u4tmp[1]);
 
 	u4tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0x550);
 	u1tmp[0] = btcoexist->btc_read_1byte(btcoexist, 0x522);
@@ -3607,7 +3607,7 @@ ex_halbtc8821a2ant_display_coex_info(
 	u1tmp[1] = btcoexist->btc_read_1byte(btcoexist, 0xa5c);
 	RT_TRACE(rtlpriv, COMP_INIT, DBG_DMESG, "\r\n %-35s = 0x%x/ 0x%x",
 		 "OFDM-FA/ CCK-FA",
-		 u4tmp[0], (u1tmp[0]<<8) + u1tmp[1]);
+		 u4tmp[0], (u1tmp[0] << 8) + u1tmp[1]);
 
 	u4tmp[0] = btcoexist->btc_read_4byte(btcoexist, 0x6c0);
 	u4tmp[1] = btcoexist->btc_read_4byte(btcoexist, 0x6c4);
