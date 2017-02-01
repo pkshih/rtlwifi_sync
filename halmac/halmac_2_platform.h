@@ -37,49 +37,6 @@
 #include "halmac_hw_cfg.h"
 #endif
 
-/*[Driver] provide the define of _TRUE, _FALSE, NULL, u8, u16, u32*/
-
-#ifndef _TRUE
-	#define _TRUE	1
-#endif
-
-#ifndef _FALSE
-	#define _FALSE	(!_TRUE)
-#endif
-
-#ifndef NULL
-	#define NULL	((void *)0)
-#endif
-
-#ifndef BOOL
-	#define BOOL	bool
-#endif
-
-#define HALMAC_INLINE	inline
-
-typedef u8	*pu8;
-typedef u16	*pu16;
-typedef u32	*pu32;
-typedef s8	*ps8;
-typedef s16	*ps16;
-typedef s32	*ps32;
-
-
-#define HALMAC_PLATFORM_LITTLE_ENDIAN 1
-#define HALMAC_PLATFORM_BIG_ENDIAN 0
-
-/* Note : Named HALMAC_PLATFORM_LITTLE_ENDIAN / HALMAC_PLATFORM_BIG_ENDIAN
- * is not mandatory. But Little endian must be '1'. Big endian must be '0'
- */
-/*[Driver] config the system endian*/
-#if defined(__LITTLE_ENDIAN)
-#define HALMAC_SYSTEM_ENDIAN HALMAC_PLATFORM_LITTLE_ENDIAN
-#elif defined(__BIG_ENDIAN)
-#define HALMAC_SYSTEM_ENDIAN HALMAC_PLATFORM_BIG_ENDIAN
-#else
-#error
-#endif
-
 /*[Driver] config if the operating platform*/
 #define HALMAC_PLATFORM_WINDOWS		0
 #define HALMAC_PLATFORM_LINUX		1
