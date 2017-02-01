@@ -1499,7 +1499,7 @@ void rtl_get_tcb_desc(struct ieee80211_hw *hw,
 }
 EXPORT_SYMBOL(rtl_get_tcb_desc);
 
-void display_coex(struct ieee80211_hw *hw, const char *str)
+static void display_coex(struct ieee80211_hw *hw, const char *str)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	u8 *buff, *ptr_start, *ptr_cur;
@@ -2764,7 +2764,7 @@ bool rtl_check_beacon_key(struct ieee80211_hw *hw, void *data, unsigned int len)
 		bcn_key.bcn_channel = ht_oper_ie->primary_chan;
 
 	if (ht_cap)
-		bcn_key.ht_cap_info = ht_cap_ie->cap_info;
+		bcn_key.ht_cap_info = __le16_to_cpu(ht_cap_ie->cap_info);
 
 	if (ht_oper)
 		bcn_key.ht_info_infos_0_sco = ht_oper_ie->ht_param & 0x03;
