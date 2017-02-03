@@ -1064,18 +1064,16 @@ void rtl_debug_add_one(struct ieee80211_hw *hw)
 	rtlpriv->dbg.debugfs_dir =
 		debugfs_create_dir(rtlpriv->dbg.debugfs_name, debugfs_topdir);
 	if (!rtlpriv->dbg.debugfs_dir) {
-		RT_TRACE(rtlpriv, COMP_INIT, DBG_EMERG,
-			"Unable to init debugfs:/%s/%s\n", rtlpriv->cfg->name,
-			rtlpriv->dbg.debugfs_name);
+		pr_err("Unable to init debugfs:/%s/%s\n", rtlpriv->cfg->name,
+		       rtlpriv->dbg.debugfs_name);
 		return;
 	}
 
 	entry1 = debugfs_create_file("mac-0", S_IFREG | S_IRUGO,
 			  rtlpriv->dbg.debugfs_dir, hw, &file_ops_mac_0);
 	if (!entry1)
-		RT_TRACE(rtlpriv, COMP_INIT, DBG_EMERG,
-			 "Unable to initialize debugfs:/%s/%s/mac-0\n",
-			  rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
+		pr_err("Unable to initialize debugfs:/%s/%s/mac-0\n",
+		       rtlpriv->cfg->name, rtlpriv->dbg.debugfs_name);
 
 	entry1 = debugfs_create_file("mac-1", S_IFREG | S_IRUGO,
 				 rtlpriv->dbg.debugfs_dir, hw, &file_ops_mac_1);
