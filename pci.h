@@ -274,7 +274,6 @@ struct mp_adapter {
 };
 
 struct rtl_pci_priv {
-	struct bt_coexist_info bt_coexist;
 	struct rtl_led_ctl ledctl;
 	struct rtl_pci dev;
 	struct mp_adapter ndis_adapter;
