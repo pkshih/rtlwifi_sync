@@ -396,6 +396,7 @@ MODULE_AUTHOR("Realtek WlanFAE	<wlanfae@realtek.com>");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Realtek 8723BE 802.11n PCI wireless");
 MODULE_FIRMWARE("rtlwifi/rtl8723befw.bin");
+MODULE_FIRMWARE("rtlwifi/rtl8723befw_36.bin");
 
 module_param_named(swenc, rtl8723be_mod_params.sw_crypto, bool, 0444);
 module_param_named(debug, rtl8723be_mod_params.debug, int, 0444);
