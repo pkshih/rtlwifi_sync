@@ -100,7 +100,8 @@ static void _rtl8822be_translate_rx_signal_stuff(struct ieee80211_hw *hw,
 	}
 
 	/* signal statistics */
-	rtl_process_phyinfo(hw, tmp_buf, pstatus);
+	if (p_phystrpt)
+		rtl_process_phyinfo(hw, tmp_buf, pstatus);
 }
 
 static void _rtl8822be_insert_emcontent(struct rtl_tcb_desc *ptcb_desc,
@@ -305,12 +306,17 @@ bool rtl8822be_rx_query_desc(struct ieee80211_hw *hw, struct rtl_stats *status,
 	_rtl8822be_translate_rx_signal_stuff(hw, skb, status, p_phystrpt);
 
 	/* below info. are filled by _rtl8822be_translate_rx_signal_stuff() */
+	if (!p_phystrpt)
+		goto label_no_physt;
+
 	rx_status->signal = status->recvsignalpower;
 
 	if (status->rx_packet_bw == HT_CHANNEL_WIDTH_20_40)
 		rx_status->flag |= RX_FLAG_40MHZ;
 	else if (status->rx_packet_bw == HT_CHANNEL_WIDTH_80)
 		rx_status->vht_flag |= RX_VHT_FLAG_80MHZ;
+
+label_no_physt:
 
 	return true;
 }
