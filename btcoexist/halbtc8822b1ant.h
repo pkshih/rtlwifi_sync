@@ -310,6 +310,7 @@ struct coex_sta_8822b_1ant {
 	u32	bt_coex_supported_feature;
 	u32	bt_coex_supported_version;
 	bool	rf4ce_enabled;
+	u8	switch_band_notify_to;
 };
 
 struct rfe_type_8822b_1ant {
