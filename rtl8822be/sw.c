@@ -307,7 +307,7 @@ static struct rtl_hal_ops rtl8822be_hal_ops = {
 
 static struct rtl_mod_params rtl8822be_mod_params = {
 	.sw_crypto = false,
-	.inactiveps = false,
+	.inactiveps = true,
 	.swctrl_lps = false,
 	.fwctrl_lps = true,
 	.msi_support = true,
